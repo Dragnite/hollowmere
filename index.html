@@ -1998,7 +1998,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23d</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23e</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -4974,8 +4974,8 @@ let sysT=0;
 function sysCheck(){if(!P||!started||CUT.on||SYSP||wopen||trans||dun&&!dun.sec&&0)return;P.sysSeen=P.sysSeen||{};for(const[lv,k,t,h]of SYSU){if(P.lv>=lv&&!P.sysSeen[k]){P.sysSeen[k]=1;if(P.lv-lv>12&&(!P.tqIntro||k.startsWith('n12')))continue;sysPop(t,h)}}sysShow()}
 /* ---------- tutorial quest chain (guided: arrow, camera pan, chapters) ---------- */
 const nearest=(arr,f)=>{let b=null,bd=1e9;for(const o of arr||[]){if(f&&!f(o))continue;const d=Math.hypot(o.x-P.x,o.y-P.y);if(d<bd){bd=d;b=o}}return b};
-const tgInt=(re,txt)=>()=>{const i=M.ints&&M.ints.find(i=>re.test(i.l));return i?{x:i.x,y:i.y-8,n:txt||i.l,hw:36,hh:32,oy:-24}:null};
-const tgNpc=(k,txt)=>()=>{const n=M.npcs&&M.npcs.find(n=>n.k==k);return n?{x:n.x,y:n.y-14,n:txt||n.n,hw:15,hh:22,oy:0}:null};
+const tgInt=(re,txt)=>()=>{const i=nearest(M.ints,i=>re.test(i.l)&&i.x>-500&&i.y>-500&&(!i.node||i.node.t<=0)&&(!i.chest||!i.chest.open));return i?{x:i.x,y:i.y-8,n:txt||i.l,hw:36,hh:32,oy:-24}:null};
+const tgNpc=(k,txt)=>()=>{const n=nearest(M.npcs,n=>n.k==k&&n.x>-500);return n?{x:n.x,y:n.y-14,n:txt||n.n,hw:15,hh:22,oy:0}:null};
 const TCH=['I. AWAKENING','II. THE OPEN ROAD','III. INTO THE DEEP'];
 const TQS=[
 {ch:0,t:'Take your first steps',h:'Walk around with <b>W A S D</b> or the arrow keys. Roll with <b>Space</b>. This quest tracker stays at the top of the screen: press <b>Show me</b> on it whenever you need directions.',hint:'Move around town',need:300,cur:()=>P.tq.d,rw:{g:30},tg:null},
@@ -6080,7 +6080,7 @@ function gp15(){const now=performance.now(),dt=Math.min(.05,(now-(GP.t15||now))/
  const raw=bp.slice();if(raw[13]&&raw[8])GP.admL=1;if(GP.admL){if(!raw[13]&&!raw[8]&&!raw[9]&&!raw[5])GP.admL=0;else for(let i=0;i<bp.length;i++)bp[i]=false}
  const[ax,ay]=gpAxes(pad),lx=pad.axes[0]||0,ly=pad.axes[1]||0,ry=pad.axes[3]||0;
  if(started&&raw[13]&&raw[8]&&raw[9]&&raw[5]&&!GP.admF&&typeof admPad16=='function'){GP.admF=1;admPad16()}if(!(raw[13]&&raw[8]&&raw[9]&&raw[5]))GP.admF=0;
- if(raw.some(Boolean)||Math.hypot(ax,ay)>.5)GP.pt=now;if(raw.some(Boolean)||ax||ay){GP.act=now;if(raw.some((v,i)=>v&&!(pv[i]))||Math.hypot(ax,ay)>.5||GP.last=='pad')GP.last='pad';if(!GP.aud){GP.aud=1;try{initAudio()}catch(e){}}}
+ if(raw.some(Boolean)||Math.hypot(ax,ay)>.12)GP.pt=now;if(raw.some(Boolean)||ax||ay){GP.act=now;if(raw.some((v,i)=>v&&!(pv[i]))||Math.hypot(ax,ay)>.5||GP.last=='pad')GP.last='pad';if(!GP.aud){GP.aud=1;try{initAudio()}catch(e){}}}
  if(!started){if(!GP.tA&&GP.act&&now-GP.act<1500){GP.tA=1;if(!GP.cur)curOn15()}}else if(GP.tA){GP.tA=0;if(GP.cur)curOff15(1)}
  const pop=started&&(SYSP||CUT.on),mini=started&&!wopen&&(SVMG||MGI||(typeof FI!='undefined'&&FI.on));
  const dlg=pop||mini;
@@ -6110,7 +6110,7 @@ function gp15(){const now=performance.now(),dt=Math.min(.05,(now-(GP.t15||now))/
   gpRelAll15();if(GP.foc&&!GP.foc.isConnected&&GP.fd){const L=gpList(root),f=GP.fd,tt=e=>(e.textContent||'').trim().slice(0,30);const best=L.find(e=>f.a&&e.dataset.a==f.a&&tt(e)==f.t)||L.find(e=>f.s&&e.dataset.s==f.s)||L.find(e=>f.a&&e.dataset.a==f.a)||L.find(e=>f.w&&e.dataset.w==f.w)||L.reduce((b,e)=>{const r=e.getBoundingClientRect(),d=Math.hypot(r.left+r.width/2-f.x,r.top+r.height/2-f.y);return !b||d<b[1]?[e,d]:b},null)?.[0];if(best)gpSetFocus(best);else GP.foc=null}
   let dx=ax,dy=ay;if(B(12))dy=-1;if(B(13))dy=1;if(B(14))dx=-1;if(B(15))dx=1;
   if(dx||dy){if(!GP.mvT||now-GP.mvT>(GP.mvF?120:340)){const el=GP.foc;if(el&&el.type=='range'&&dx){el.value=+el.value+dx*(+el.step||5)*(el.max>200?1:3);el.dispatchEvent(new Event('input',{bubbles:true}))}else if(el&&el.tagName=='SELECT'&&dx){el.selectedIndex=Math.max(0,Math.min(el.options.length-1,el.selectedIndex+dx));el.dispatchEvent(new Event('change',{bubbles:true}));el.dispatchEvent(new Event('input',{bubbles:true}))}else gpMove(root,dx,dy);GP.mvF=GP.mvT?1:0;GP.mvT=now}}else{GP.mvT=0;GP.mvF=0}
-  if(dn(0))gpClick(root);
+  if(dn(0)&&now-(GP.clT||0)>200){GP.clT=now;gpClick(root)}
   if(Math.abs(ry)>.22){const t=GP.foc||root.querySelector('.bd')||root;scr15(t,Math.sign(ry)*Math.pow((Math.abs(ry)-.22)/.78,1.4)*900*dt)||(root.querySelector('.bd')&&(root.querySelector('.bd').scrollTop+=Math.sign(ry)*600*dt))}
   if(dn(1)){if(typeof admVis16=='function'&&admVis16())admClose16();else if(started&&wopen)closeW();else gpTap('Escape')}
   if(started&&wopen&&(dn(4)||dn(5)))winCyc15(dn(5)?1:-1);
@@ -7374,6 +7374,24 @@ try{if(window.PLAT31=='xbox'&&CFG.gpzm!==1){CFG.gpzm=1;if(CFG.gpz==null||CFG.gpz
    if(CFG.arf&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&(window.HZ29||60)>=55&&CFG.perf!==0){if(f<50)low++;else low=0;if(low>=2&&t>cool){low=0;cool=t+15000;refresh()}}else low=0}
   requestAnimationFrame(tick)};requestAnimationFrame(tick);
 }
+
+/* ===== v14.23e: tutorial targets always point at something real; Xbox input-mode and pad-spam hardening ===== */
+{
+ /* 1. Chop a tree: point at the nearest living tree to the player, wherever they are */
+ const tree=()=>{try{if(!M||!M.pr||M.sea||dun)return null;let b=null,bd=1e9;for(const p of M.pr){if(!(typeof svIsTree=='function'&&svIsTree(p)))continue;if(p.cut&&tm<p.cut)continue;const d=Math.hypot(p.x-P.x,p.y-P.y);if(d<bd){bd=d;b=p}}return b?{x:b.x,y:b.y-14,n:'Tree',hw:36,hh:32,oy:-24}:null}catch(e){return null}};
+ const q=TQS.find(q=>q.t=='Chop a tree');if(q){q.tg=tree;q.hint='The nearest tree'}
+ /* every other guided target: never accept a hidden / off-map position */
+ for(const t of TQS){if(typeof t.tg!='function')continue;const f=t.tg;t.tg=function(){let r=null;try{r=f.apply(this,arguments)}catch(e){}if(r&&(!(r.x>-100)||!(r.y>-100)||r.x>M.w*16+100||r.y>M.h*16+100))return null;return r}}
+}
+/* 2. input-mode detection that console browsers cannot confuse: Edge on Xbox turns pad sticks/buttons into mouse and key events */
+kbIn27=function(e){try{if(!e.isTrusted||GP.snd)return false;const now=performance.now();let padNow=false;for(const g of(navigator.getGamepads?navigator.getGamepads():[])){if(!g||!g.connected)continue;if(g.buttons.some(b=>b&&b.pressed)||Math.hypot(g.axes[0]||0,g.axes[1]||0)>.12||Math.hypot(g.axes[2]||0,g.axes[3]||0)>.12){padNow=true;break}}
+ const idle=now-(GP.pt||-1e9);if(padNow||idle<450)return false;
+ if(typeof PLATD!='undefined'&&(PLATD==='xbox'||PLATD==='console')&&GP.on){const t=e.type;if(t==='keydown'){const k=e.code||'';return /^(Enter|NumpadEnter|Arrow|Escape|Tab|Gamepad|Browser|Space)/.test(k)?idle>8000:idle>1500}return idle>8000}
+ return true}catch(x){return true}};
+/* 3. one pad press = one action: drop the browser's own key / click events that Edge makes from the same pad press */
+{const BL=['keydown','keyup','keypress','click','dblclick','mousedown','mouseup','pointerdown','pointerup','auxclick'];
+ const recent=()=>{const now=performance.now();if(now-(GP.pt||-1e9)<350)return true;try{for(const g of(navigator.getGamepads?navigator.getGamepads():[])){if(g&&g.connected&&g.buttons.some(b=>b&&b.pressed))return true}}catch(e){}return false};
+ for(const t of BL)addEventListener(t,e=>{try{if(!e.isTrusted||GP.snd||!GP.on||GP.last!=='pad')return;if(t.startsWith('key')&&!/^(Enter|NumpadEnter|Space|Arrow(Up|Down|Left|Right)|Escape|Backspace|Tab)$/.test(e.code))return;if(!recent())return;e.stopImmediatePropagation();e.preventDefault()}catch(x){}},true)}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
