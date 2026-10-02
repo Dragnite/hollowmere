@@ -204,7 +204,7 @@ const FONTS={RSUF:{n:'RuneScape',f:"RSUF,'Courier New',monospace"},WoW:{n:'WoW',
 const FB=()=>(FONTS[CFG.font]||FONTS.RSUF).f;let FH="RSUF,'Courier New',monospace",FD="RSUF,'Courier New',monospace";const PQ=()=>[.35,.65,1][CFG.pq];
 const L=s=>{const i=new Image();i.src=s;return i},AT=L(A.atlas),ENI=A.en.map(e=>L(e.img)),HFX=L(A.hitfx),DFX=L(A.death);
 function applyCFG(){if(CFG.font=='Classic'||CFG.font=='OdeIdle')CFG.font='RSUF';const r=document.documentElement.style,fo=FONTS[CFG.font]||FONTS.RSUF,RS="RSUF,'Courier New',monospace";FH=fo.h||RS;FD=fo.c||RS;r.setProperty('--ff',FB());r.setProperty('--fh',FH);r.setProperty('--fs',fo.s||FB());r.setProperty('--fc',FD);if(typeof sgWc!='undefined')for(const k in sgWc)delete sgWc[k];cv.style.imageRendering=CFG.smooth?'auto':'pixelated';fit();if(typeof setVol=='function')setVol()}
-function fit(){const lh=(typeof LEGH15=='function'?LEGH15():0),ha=innerHeight-lh,w0=Math.min(innerWidth,ha*16/9),w=Math.min(w0,[1e9,1280,1366,1600,1920,2560,3840][CFG.wsz|0]||1e9),st=lh>0&&w0<innerWidth&&w>=w0-1;G.style.width=(st?innerWidth:w)+'px';G.style.height=st?ha+'px':'';document.documentElement.style.setProperty('--u',w/960*Math.min(1,CFG.uis)+'px');const d=Math.min(2,window.devicePixelRatio||1),tw=Math.round(w*d);if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(w*9/16*d)}TSC=tcv.width/VW}
+function fit(){const lh=(typeof LEGH15=='function'?LEGH15():0),ha=innerHeight-lh,w0=Math.min(innerWidth,ha*16/9),w=Math.min(w0,[1e9,1280,1366,1600,1920,2560,3840][CFG.wsz|0]||1e9),st=lh>0&&w0<innerWidth&&w>=w0-1;G.style.width=(st?innerWidth:w)+'px';G.style.height=st?ha+'px':'';document.documentElement.style.setProperty('--u',w/960*Math.min(1,CFG.uis)+'px');const d=Math.min(2,window.devicePixelRatio||1),tw=Math.min(1920,Math.round(w*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*9/16)}TSC=tcv.width/VW}
 addEventListener('resize',fit);
 let zone=0,dun=null,P=null,M=null,started=false,wopen=false,tm=0,hs=0,shake=0,fade=0,cam={x:0,y:0},auto=false,INT=0,tgtI=0,muted=false,AC,mast,musG,sfxG,uiG,rev,SB={};
 /* ===== AUDIO ===== */
@@ -1993,7 +1993,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.22q</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.22s</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -6028,7 +6028,7 @@ function legList15(ctx){const f=gf15,lt=f(6);
  return[]}
 const LEGSIG15={s:''};
 function legRender15(force){const el=$('leg15');if(!el)return;let ctx=!started?(GP.on?(GP.cur?(MS.mode=='create'?'tcr':'tsel'):'menu'):''):(SYSP||CUT.on||SVMG||MGI||(typeof FI!='undefined'&&FI.on))?'dialog':GP.cur?'cursor':wopen?'menu':'world';if(!GP.on)ctx='';
- const sig=ctx+'|'+JSON.stringify(CFG.gpm||0)+JSON.stringify(CFG.kb||0)+'|'+el.clientWidth+'x'+el.clientHeight;if(!force&&sig===LEGSIG15.s)return;LEGSIG15.s=sig;
+ const sig=ctx+'|'+JSON.stringify(CFG.gpm||0)+JSON.stringify(CFG.kb||0)+'|'+(GP.lgd||'');if(!force&&sig===LEGSIG15.s)return;LEGSIG15.s=sig;
  const L=legList15(ctx);if(!L.length){el.innerHTML='';return}
  const W=el.clientWidth,H=el.clientHeight,rows=H>170?4:H>105?3:2;let n=L.length,cols,fs;for(;n>3;n--){cols=Math.ceil(n/rows);fs=Math.min(H/(rows*2.15),W/(cols*14.5),W*.017);if(fs>=11)break}
  cols=Math.ceil(n/rows);fs=Math.min(H/(rows*2.15),W/(cols*14.5),34,W*.017);
@@ -6039,6 +6039,7 @@ function legRender15(force){const el=$('leg15');if(!el)return;let ctx=!started?(
  const c=document.createElement('div');c.id='cur15';c.innerHTML='<svg viewBox="0 0 24 30" width="100%" height="100%"><path d="M2 2L2 24L8 18.5L12 28L16 26.3L12 17L20 17Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M2 2L2 24L8 18.5L12 28L16 26.3L12 17L20 17Z" fill="none" stroke="#7fe3ff" stroke-width=".9"/></svg>';document.body.appendChild(c)}
 const LEGH15=()=>{const m=legMode15();if(!m)return 0;if(!GP.on||!GP.act||performance.now()-GP.act>25000)return 0;return Math.round(innerHeight*.18*Math.max(.5,Math.min(1.5,CFG.gpz==null?1:CFG.gpz)))};
 {const _f=fit;fit=function(){const on=LEGH15()>0;document.body.style.alignItems=on?'flex-start':'';_f();const el=$('leg15');if(!el)return;if(on){const r=G.getBoundingClientRect();const h=innerHeight-r.bottom;if(h>36){el.style.display='block';el.style.top=r.bottom+'px';LEGSIG15.s='';legRender15(1);return}}el.style.display='none'}}
+setInterval(()=>{const e=document.getElementById('leg15');if(e)GP.lgd=e.clientWidth+'x'+e.clientHeight},400);addEventListener('resize',()=>{GP.lgd=''});
 function legSync15(){const on=LEGH15()>0;if(on!==!!GP.legOn){GP.legOn=on;try{fit()}catch(e){}}else if(on)legRender15()}
 /* ---------- virtual cursor ---------- */
 function me15(type,el,btn,bs,rel){if(!el)return;try{const P_=type.startsWith('pointer');const o={bubbles:!/enter$|leave$/.test(type),cancelable:true,composed:true,view:window,clientX:GP.cx,clientY:GP.cy,screenX:GP.cx,screenY:GP.cy,button:btn||0,buttons:bs||0,relatedTarget:rel||null};if(P_){o.pointerId=1;o.pointerType='mouse';o.isPrimary=true}el.dispatchEvent(P_?new PointerEvent(type,o):new MouseEvent(type,o))}catch(e){}}
@@ -6067,14 +6068,14 @@ function gpOff15(){GP.on=false;GP.pad=null;GP.prev=[];if(GP.cur)curOff15(1);gpRe
 function gp15(){const now=performance.now(),dt=Math.min(.05,(now-(GP.t15||now))/1000);GP.t15=now;
  if(!CFG.gp){if(GP.on)gpOff15();legSync15();return}
  let pad=null;try{const g=navigator.getGamepads?navigator.getGamepads():[];for(const p of g)if(p&&p.connected){pad=p;break}}catch(e){}
- if(!pad){if(GP.on)gpOff15();legSync15();return}
- if(!GP.on){GP.on=true;try{if(started)toast('Controller connected. Both sticks = cursor mode.','gp',3500)}catch(e){}}
+ if(!pad){/* some browsers (Edge on Xbox) report the pad as missing between inputs: only drop it after a few seconds */GP.miss=GP.miss||now;if(GP.on&&now-GP.miss>5000)gpOff15();legSync15();return}
+ GP.miss=0;if(!GP.on){GP.on=true;try{if(started)toast('Controller connected. Both sticks = cursor mode.','gp',3500)}catch(e){}}
  pad=gpMap14(pad);if(CFG.gsw){const a=pad.axes;pad={connected:true,id:pad.id,axes:[a[2],a[3],a[0],a[1]],buttons:pad.buttons,vibrationActuator:pad.vibrationActuator,mapping:pad.mapping}}GP.pad=pad;GP.mv=null;GP.atk=false;
  const bp=pad.buttons.map(b=>!!(b&&b.pressed)),pv=GP.prev||[],B=i=>bp[i],dn=i=>bp[i]&&!pv[i],up=i=>!bp[i]&&pv[i];
  const raw=bp.slice();if(raw[13]&&raw[8])GP.admL=1;if(GP.admL){if(!raw[13]&&!raw[8]&&!raw[9]&&!raw[5])GP.admL=0;else for(let i=0;i<bp.length;i++)bp[i]=false}
  const[ax,ay]=gpAxes(pad),lx=pad.axes[0]||0,ly=pad.axes[1]||0,ry=pad.axes[3]||0;
  if(started&&raw[13]&&raw[8]&&raw[9]&&raw[5]&&!GP.admF&&typeof admPad16=='function'){GP.admF=1;admPad16()}if(!(raw[13]&&raw[8]&&raw[9]&&raw[5]))GP.admF=0;
- if(raw.some(Boolean)||ax||ay){GP.act=now;if(raw.some((v,i)=>v&&!(pv[i]))||Math.hypot(ax,ay)>.5||GP.last=='pad')GP.last='pad';if(!GP.aud){GP.aud=1;try{initAudio()}catch(e){}}}
+ if(raw.some(Boolean)||Math.hypot(ax,ay)>.5)GP.pt=now;if(raw.some(Boolean)||ax||ay){GP.act=now;if(raw.some((v,i)=>v&&!(pv[i]))||Math.hypot(ax,ay)>.5||GP.last=='pad')GP.last='pad';if(!GP.aud){GP.aud=1;try{initAudio()}catch(e){}}}
  if(!started){if(!GP.tA&&GP.act&&now-GP.act<1500){GP.tA=1;if(!GP.cur)curOn15()}}else if(GP.tA){GP.tA=0;if(GP.cur)curOff15(1)}
  const pop=started&&(SYSP||CUT.on),mini=started&&!wopen&&(SVMG||MGI||(typeof FI!='undefined'&&FI.on));
  const dlg=pop||mini;
@@ -6169,7 +6170,8 @@ ACT2.fsc=function(){try{if(document.fullscreenElement)document.exitFullscreen();
 
 /* ================= v14.18: settings (display, colour vision, controller), prompt glyphs, frontier card, safe arrival, minigame tutorial ================= */
 /* ---------- last-used input device ---------- */
-addEventListener('keydown',e=>{if(e.isTrusted&&!GP.snd)GP.last='kb'},true);addEventListener('mousedown',e=>{if(e.isTrusted)GP.last='kb'},true);
+function kbIn27(e){if(!e.isTrusted||GP.snd)return false;/* consoles / Xbox Edge turn pad presses into key and mouse events: ignore those */try{if(performance.now()-(GP.pt||-1e9)<450)return false;for(const g of(navigator.getGamepads?navigator.getGamepads():[])){if(!g||!g.connected)continue;if(g.buttons.some(b=>b&&b.pressed)||Math.hypot(g.axes[0]||0,g.axes[1]||0)>.5||Math.hypot(g.axes[2]||0,g.axes[3]||0)>.5)return false}}catch(x){}return true}
+addEventListener('keydown',e=>{if(kbIn27(e))GP.last='kb'},true);addEventListener('mousedown',e=>{if(kbIn27(e))GP.last='kb'},true);
 /* ---------- safe arrival: the portal / entry point counts as town, and events never start while loading ---------- */
 {const _e=enterZone;enterZone=function(z,side,at){_e.apply(this,arguments);try{if(M&&M.kind=='z')M.arr={x:P.x,y:P.y}}catch(e){}};
  const _s=evStart;evStart=function(){if(trans||(M&&M.kind=='z'&&M.arr&&P&&Math.hypot(P.x-M.arr.x,P.y-M.arr.y)<200))return;return _s.apply(this,arguments)}}
@@ -7082,7 +7084,7 @@ setInterval(()=>{try{if(P&&started&&P.lv>=8&&!P.evTm)P.evTm=1}catch(e){}},2000);
 {const st=document.createElement('style');st.textContent='body.osk27 .mmod{align-items:flex-start;padding-top:3%;box-sizing:border-box}';document.head.appendChild(st);
  const _o=oskOpen16;oskOpen16=function(e){document.body.classList.add('osk27');return _o(e)};const _c=oskClose16;oskClose16=function(){document.body.classList.remove('osk27');return _c()}}
 /* help window: pad glyphs only while the controller is the active device; any trusted key/mouse input flips back */
-for(const t of['mousemove','wheel','pointerdown','touchstart'])addEventListener(t,e=>{if(e.isTrusted&&!GP.snd&&!(t=='mousemove'&&!e.movementX&&!e.movementY))GP.last='kb'},true);
+for(const t of['mousemove','wheel','pointerdown','touchstart'])addEventListener(t,e=>{if(kbIn27(e)&&!(t=='mousemove'&&!e.movementX&&!e.movementY))GP.last='kb'},true);
 {let pm=null;setInterval(()=>{try{const n=padMode16();if(pm!==null&&n!==pm&&wopen&&wk=='help')rW();pm=n}catch(e){}},120)}
 /* tutorial pop-ups: footer is device-aware (A glyph on pad, gold Space keycap on keyboard) */
 {const ft=()=>padMode16()?'Press '+gl15('A')+' to continue':'Click or press <kbd class="kc24 sp27">Space</kbd> to continue';
@@ -7090,8 +7092,6 @@ for(const t of['mousemove','wheel','pointerdown','touchstart'])addEventListener(
  function fix(){const o=document.getElementById('syspop');if(!o||o.style.display=='none')return;const d=o.lastElementChild;if(!d)return;if(!d.classList.contains('ft27')){d.classList.add('ft27');d.dataset.sig=''}const sig=padMode16()?'p':'k';if(d.dataset.sig!==sig){d.dataset.sig=sig;d.dataset.t24='';d.innerHTML=ft()}}
  setInterval(()=>{try{fix()}catch(e){}},150);
  const st=document.createElement('style');st.textContent='.ft27{display:flex;align-items:center;justify-content:center;gap:.4em;flex-wrap:wrap}.ft27 svg.gl{height:1.9em;width:auto}.ft27 kbd.sp27{font-size:1em!important;margin:0 .15em}';document.head.appendChild(st)}
-/* FPS counter always sits between the XP bar and the skill slots */
-{setInterval(()=>{try{const f=$('fps'),b=document.querySelector('#bot>.bar');if(!f||f.hidden||!b)return;f.style.position='relative';f.style.top='0px';const br=b.getBoundingClientRect(),fr=f.getBoundingClientRect(),ab=$('abar').getBoundingClientRect();if(fr.top<br.bottom+1||fr.bottom>ab.top+1){f.style.top=Math.max(0,br.bottom+2-fr.top)+'px'}}catch(e){}},400)}
 /* keyboard view of the help window omits the controller rows */
 {const _h=wHelp;wHelp=function(){const s=String(_h.apply(this,arguments));if(padMode16())return s;return s.replace(/<div><span>Controller [^<]*<\/span><b>[\s\S]*?<\/b><\/div>/g,'')}}
 /* one-time reset: older builds saved the admin icon override into settings, leaving some players stuck on controller icons */
@@ -7126,6 +7126,20 @@ setInterval(()=>{try{const h=document.getElementById('hud');if(!h)return;const c
 #cur .stk.on::after{content:"";position:absolute;left:4%;right:4%;bottom:0;height:calc(var(--k)*.55em);background:repeating-linear-gradient(90deg,#c01010 0 .18em,transparent .18em .7em,#8a0808 .7em .95em,transparent .95em 1.5em,#d02020 1.5em 1.65em,transparent 1.65em 2.3em);border-radius:0 0 .3em .3em;-webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent);transform-origin:top;animation:drip27 calc(3s - var(--k)*1.8s) ease-in infinite}
 @keyframes bld27{50%{text-shadow:0 1px 0 #000,0 0 calc(var(--k)*16px) rgba(255,0,0,1),0 calc(var(--k)*3px) calc(var(--k)*4px) #7a0000}}
 @keyframes drip27{0%{transform:scaleY(.35);opacity:.6}70%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1.25);opacity:0}}`;document.head.appendChild(st)}
+/* icon mode flicker guard: once the controller is the active device it stays active until real keyboard/mouse use (see kbIn27), even if the pad briefly drops out of getGamepads() */
+{const _p=padMode16;padMode16=function(){const m=CFG.gpi||0;if(m==2)return false;if(m==1)return true;const t=performance.now();if(GP.on&&GP.last=='pad'){GP.seen27=t;return true}return !!(GP.last=='pad'&&GP.seen27&&t-GP.seen27<6000&&CFG.gp)}}
+
+/* FPS counter: floats in the gap under the XP bar, takes no layout space (the skill bar keeps its original height) */
+{const st=document.createElement('style');st.textContent='#fps{position:absolute!important;left:50%!important;right:auto!important;top:calc(var(--u,1px)*17.6)!important;bottom:auto!important;transform:translateX(-50%)!important;margin:0!important;width:auto!important;height:auto!important;font-size:calc(var(--u,1px)*8)!important;line-height:1.05!important;padding:0 calc(var(--u,1px)*5)!important;border-radius:calc(var(--u,1px)*3);background:#000b!important;z-index:30!important;white-space:nowrap}#fps[hidden]{display:none!important}#bot{position:absolute}';document.head.appendChild(st)}
+/* ultimate title: a DOM overlay above every HUD panel (the canvas copy could end up behind the quest tracker) */
+{const o=document.createElement('div');o.id='scrt27';o.innerHTML='<b></b><i></i>';document.body.appendChild(o);
+ const st=document.createElement('style');st.textContent='#scrt27{position:fixed;left:calc(var(--gl,0px) + var(--gw,100vw)/2);top:calc(var(--gt,0px) + var(--gh,100vh)*.2);transform:translate(-50%,-50%);z-index:60;pointer-events:none;text-align:center;display:none;white-space:nowrap}#scrt27 b{display:block;font-weight:400;font-size:calc(var(--u,1px)*44);line-height:1;color:#fff;text-shadow:0 0 calc(var(--u,1px)*8) #000,calc(var(--u,1px)*2) calc(var(--u,1px)*2) 0 #000,calc(var(--u,1px)*-2) calc(var(--u,1px)*2) 0 #000,0 calc(var(--u,1px)*-2) 0 #000}#scrt27 i{display:block;font-style:normal;font-size:calc(var(--u,1px)*15);margin-top:calc(var(--u,1px)*4);color:#fff;text-shadow:0 calc(var(--u,1px)*1) 0 #000,0 0 calc(var(--u,1px)*4) #000;letter-spacing:.2em}';document.head.appendChild(st);
+ const B=o.firstChild,I=o.lastChild;let lt='',ls='',lc='',vis=0;
+ scrText=function(){if(SCR.ti>.02&&SCR.title){const a=Math.min(1,SCR.ti);if(lt!==SCR.title){lt=SCR.title;B.textContent=lt;B.style.fontSize=lt.length>17?'calc(var(--u,1px)*34)':''}if(lc!==SCR.tcol){lc=SCR.tcol;B.style.color=lc}const sb=SCR.sub||'';if(ls!==sb){ls=sb;I.textContent=sb}B.style.fontFamily=I.style.fontFamily=(typeof FH!='undefined'?FH:'');o.style.opacity=a;o.style.transform='translate(-50%,-50%) scale('+(1+(1-a)*.25)+')';if(!vis){vis=1;o.style.display='block'}}else if(vis){vis=0;o.style.display='none'}}}
+/* automatic performance: if a 60 fps target is missed for a few seconds, trade away the costliest effects one step at a time */
+{if(CFG.aq==null)CFG.aq=1;let fr=0,t0=performance.now(),bad=0,cool=0;const STEPS=[()=>CFG.pq>1&&(CFG.pq=1,'particle quality'),()=>CFG.vig&&(CFG.vig=0,'vignette'),()=>CFG.wea&&(CFG.wea=0,'ambient particles'),()=>CFG.pq>0&&(CFG.pq=0,'particle quality'),()=>CFG.glow&&(CFG.glow=0,'glow effects')];
+ const tick=()=>{fr++;const t=performance.now();if(t-t0>=2500){const f=fr*1000/(t-t0),tgt=CFG.fcap>0?Math.min(60,CFG.fcap):60;fr=0;t0=t;if(CFG.aq&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on){if(f<tgt*.88)bad++;else bad=0;if(bad>=2&&t>cool){bad=0;for(const s of STEPS){const r=s();if(r){cool=t+12000;try{saveCFG();applyCFG();toast('Auto performance: '+r+' reduced to keep the game smooth (Settings > Graphics).','aq27',4500)}catch(e){}break}}}}else bad=0}requestAnimationFrame(tick)};requestAnimationFrame(tick)
+ const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row),e=h.indexOf('<small class="dim">',k);if(k<0||e<0)return h;return h.slice(0,e).replace(/<\/div>\s*$/,seg('aq','Auto performance',[[1,'On'],[0,'Off']])+'</div>')+h.slice(e)}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
