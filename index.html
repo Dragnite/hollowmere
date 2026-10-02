@@ -1438,10 +1438,12 @@ function scrUpdate(dt){SCR.tc+=(SCR.ta-SCR.tc)*Math.min(1,dt*3);SCR.bc+=(SCR.ba-
 LQ.forEach(q=>q.t-=dt);const run=LQ.filter(q=>q.t<=0);LQ=LQ.filter(q=>q.t>0);run.forEach(q=>{try{q.fn()}catch(e){console.error(e)}});
 if(tscT>0){tscT-=dt;if(tscT<=0)tsc=1}}
 function slowmo(f,d){if(CFG.cin<2)return;tsc=f;tscT=d}
+const BG22={},VG22={};function bandGrad22(c){let g=BG22[c];if(!g){g=x.createLinearGradient(0,0,0,VH*.7);g.addColorStop(0,c);g.addColorStop(1,'rgba(0,0,0,0)');BG22[c]=g}return g}
+function vigGrad22(v){const k=Math.round(v*40)+'|'+VW;let g=VG22[k];if(!g){const o=Object.keys(VG22);if(o.length>60)for(const q of o)delete VG22[q];g=x.createRadialGradient(VW/2,VH/2,VH*.35,VW/2,VH/2,VH*.95);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+(Math.round(v*40)/40)+')');VG22[k]=g}return g}
 function scrDraw(){
-if(SCR.bc>.01){const g=x.createLinearGradient(0,0,0,VH*.7);g.addColorStop(0,SCR.band);g.addColorStop(1,'rgba(0,0,0,0)');x.save();x.globalAlpha=SCR.bc*.75;x.fillStyle=g;x.fillRect(0,0,VW,VH*.7);x.globalCompositeOperation='lighter';x.globalAlpha=SCR.bc*.35;x.fillStyle=SCR.band;for(let i=0;i<9;i++){const y=6+i*11+Math.sin(tm*.9+i)*3,w=90+hh(i,3)*140,xx=((hh(i,4)*VW*2+tm*(14+i*5))%(VW+w*2))-w;x.fillRect(xx,y,w,1+(i%3==0))}x.restore()}
-if(SCR.tc>.01){x.save();x.globalAlpha=SCR.tc;x.globalCompositeOperation='multiply';x.fillStyle=SCR.tint;x.fillRect(0,0,VW,VH);x.restore()}
-if(SCR.vg>.01&&CFG.vig){const g=x.createRadialGradient(VW/2,VH/2,VH*.35,VW/2,VH/2,VH*.95);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+SCR.vg+')');x.fillStyle=g;x.fillRect(0,0,VW,VH)}
+if(SCR.bc>.01){const g=bandGrad22(SCR.band);x.save();x.globalAlpha=SCR.bc*.75;x.fillStyle=g;x.fillRect(0,0,VW,VH*.7);x.globalCompositeOperation='lighter';x.globalAlpha=SCR.bc*.35;x.fillStyle=SCR.band;for(let i=0;i<9;i++){const y=6+i*11+Math.sin(tm*.9+i)*3,w=90+hh(i,3)*140,xx=((hh(i,4)*VW*2+tm*(14+i*5))%(VW+w*2))-w;x.fillRect(xx,y,w,1+(i%3==0))}x.restore()}
+if(SCR.tc>.01){x.save();x.globalAlpha=CFG.perf?SCR.tc*.7:SCR.tc;x.globalCompositeOperation=CFG.perf?'source-over':'multiply';x.fillStyle=SCR.tint;x.fillRect(0,0,VW,VH);x.restore()}
+if(SCR.vg>.01&&CFG.vig){const g=vigGrad22(SCR.vg);x.fillStyle=g;x.fillRect(0,0,VW,VH)}
 if(SCR.flash>.01){x.save();x.globalAlpha=Math.min(1,SCR.flash);x.fillStyle=SCR.fc;x.fillRect(0,0,VW,VH);x.restore()}
 if(SCR.bars>.01){const h=Math.round(SCR.bars*26);x.fillStyle='#000';x.fillRect(0,0,VW,h);x.fillRect(0,VH-h,VW,h)}}
 function scrText(){if(SCR.ti>.02&&SCR.title){const a=Math.min(1,SCR.ti),sc=1+(1-a)*.25;tx2.save();tx2.globalAlpha=a;tx2.translate(VW/2,VH*.2);tx2.scale(sc,sc);T(SCR.title,0,0,{sz:SCR.title.length>17?17:22,f:FH,c:SCR.tcol,sc:'#000',sw:3.4,a:1});if(SCR.sub)T(SCR.sub,0,14,{sz:7.5,c:'#fff',sc:'#000',sw:2});tx2.restore()}}
@@ -1998,7 +2000,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23e</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23f</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7244,15 +7246,17 @@ body.tch #cv,body.tch #g{touch-action:none}`;
 /* ===== v14.22u: Xbox / Performance mode ===== */
 const XBOX29=(PLATD==='xbox'||PLATD==='console');
 DEF16.perf=XBOX29?1:0;
-const PERFON29=()=>{if(!CFG.perfPrev)CFG.perfPrev={fcap:CFG.fcap==null?0:CFG.fcap,vig:CFG.vig==null?1:CFG.vig,wea:CFG.wea==null?1:CFG.wea,pq:CFG.pq==null?2:CFG.pq,glow:CFG.glow==null?1:CFG.glow};CFG.fcap=60;CFG.vig=0;CFG.wea=0;if(CFG.pq>1)CFG.pq=1};
-const PERFOFF29=()=>{const o=CFG.perfPrev;if(o){CFG.fcap=o.fcap;CFG.vig=o.vig;CFG.wea=o.wea;CFG.pq=o.pq;CFG.glow=o.glow;delete CFG.perfPrev}else{CFG.fcap=0;CFG.vig=1;CFG.wea=1;CFG.pq=2;CFG.glow=1}};
+const PERFON29=()=>{if(!CFG.perfPrev)CFG.perfPrev={fcap:CFG.fcap==null?0:CFG.fcap,vig:CFG.vig==null?1:CFG.vig,wea:CFG.wea==null?1:CFG.wea,pq:CFG.pq==null?2:CFG.pq,glow:CFG.glow==null?1:CFG.glow,cin:CFG.cin==null?2:CFG.cin};CFG.fcap=XBOX29?0:60;CFG.vig=0;CFG.wea=0;if(CFG.pq>1)CFG.pq=1;if(CFG.cin>1)CFG.cin=1};
+const PERFOFF29=()=>{const o=CFG.perfPrev;if(o){CFG.fcap=o.fcap;CFG.vig=o.vig;CFG.wea=o.wea;CFG.pq=o.pq;CFG.glow=o.glow;if(o.cin!=null)CFG.cin=o.cin;delete CFG.perfPrev}else{CFG.fcap=0;CFG.vig=1;CFG.wea=1;CFG.pq=2;CFG.glow=1;CFG.cin=2}};
 if(CFG.perf==null){CFG.perf=XBOX29?1:0;if(CFG.perf)PERFON29()}
 {let last=CFG.perf|0;
  const _a=applyCFG;applyCFG=function(){_a.apply(this,arguments);try{const p=CFG.perf|0;if(p!==last){last=p;if(p)PERFON29();else PERFOFF29();try{saveCFG()}catch(e){}try{fit()}catch(e){}}document.documentElement.classList.toggle('perf29',!!p);const f=Math.max(.6,Math.min(1,CFG.fov==null?1:CFG.fov));const el=document.documentElement.style;el.setProperty('--fovz',String(1/f));document.body&&document.body.classList.toggle('nofov',f>=.999)}catch(e){}};
- const st=document.createElement('style');st.textContent='body.nofov #cv,body.nofov #tcv{transform:none!important}.perf29 *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.perf29 #cv,.perf29 #tcv{image-rendering:pixelated}';document.head.appendChild(st);
+ const st=document.createElement('style');st.textContent='body.nofov #cv,body.nofov #tcv{transform:none!important}.perf29 *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.perf29 #cv,.perf29 #tcv{image-rendering:pixelated}#scrt27{will-change:transform,opacity;contain:layout paint}.perf29 #scrt27 b,.perf29 #scrt27 i{text-shadow:0 2px 0 #000!important}';document.head.appendChild(st);
  const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min((typeof MOB28!='undefined'&&MOB28)?1024:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;const add=seg('perf','Performance mode',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)};
  try{applyCFG()}catch(e){}}
+
+try{if(XBOX29&&CFG.perf&&CFG.xbm!==1){CFG.xbm=1;CFG.fcap=0;if(CFG.cin>1)CFG.cin=1;if(CFG.perfPrev){CFG.perfPrev.fcap=0;if(CFG.perfPrev.cin==null)CFG.perfPrev.cin=2}saveCFG()}}catch(e){}
 
 /* ===== v14.22w: touch layout v2 - skill bar replaced by touch buttons, layout editor ===== */
 {
@@ -7392,6 +7396,18 @@ kbIn27=function(e){try{if(!e.isTrusted||GP.snd)return false;const now=performanc
 {const BL=['keydown','keyup','keypress','click','dblclick','mousedown','mouseup','pointerdown','pointerup','auxclick'];
  const recent=()=>{const now=performance.now();if(now-(GP.pt||-1e9)<350)return true;try{for(const g of(navigator.getGamepads?navigator.getGamepads():[])){if(g&&g.connected&&g.buttons.some(b=>b&&b.pressed))return true}}catch(e){}return false};
  for(const t of BL)addEventListener(t,e=>{try{if(!e.isTrusted||GP.snd||!GP.on||GP.last!=='pad')return;if(t.startsWith('key')&&!/^(Enter|NumpadEnter|Space|Arrow(Up|Down|Left|Right)|Escape|Backspace|Tab)$/.test(e.code))return;if(!recent())return;e.stopImmediatePropagation();e.preventDefault()}catch(x){}},true)}
+
+/* ===== v14.23f: VSync option, spread out the ultimate-ability audio cost ===== */
+{
+ if(CFG.vsync==null)CFG.vsync=1;
+ let lastV=0;const _raf=window.requestAnimationFrame.bind(window);
+ window.requestAnimationFrame=function(cb){try{if(CFG.vsync===0&&typeof loop=='function'&&cb===loop){const gap=Math.max(2,500/(window.HZ29||60)),wait=Math.max(0,gap-(performance.now()-lastV));setTimeout(()=>{lastV=performance.now();cb(lastV)},wait);return 0}}catch(e){}return _raf(cb)};
+ const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const s=h.indexOf('<div class="set">',k);if(s<0)return h;
+  const add=seg('vsync','VSync',[[1,'On (smooth)'],[0,'Off (lower latency)']]);return h.slice(0,s+17)+add+h.slice(s+17)};
+ /* the ultimate cast builds a lot of audio nodes in one frame: in Performance mode, stagger them */
+ try{const uy=ultYell;ultYell=function(){if(CFG.perf){const a=arguments;setTimeout(()=>{try{uy.apply(this,a)}catch(e){}},30)}else return uy.apply(this,arguments)}}catch(e){}
+ try{const uv=ultVoice13;ultVoice13=function(){if(CFG.perf){const a=arguments;setTimeout(()=>{try{uv.apply(this,a)}catch(e){}},90)}else return uv.apply(this,arguments)}}catch(e){}
+}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
