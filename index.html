@@ -1418,7 +1418,7 @@ if(CFG.vig){x.fillStyle=vgG;x.fillRect(0,0,VW,VH)}
 scrDraw();
 /* hi-res text overlay */
 const g=tx2;g.setTransform(TSC,0,0,TSC,sh[0]*TSC,sh[1]*TSC);g.textBaseline='alphabetic';
-for(let li=0,ln=Math.min(LBL.length,36);li<ln;li++){const l=LBL[li];const o=Object.assign({},l.o);T(l.s,Math.round(l.px-cam.x),Math.round(l.py-cam.y),o)}
+for(let li=0,ln=Math.min(LBL.length,(window.PERFX36&&window.PERFX36())?22:36);li<ln;li++){const l=LBL[li];const o=Object.assign({},l.o);T(l.s,Math.round(l.px-cam.x),Math.round(l.py-cam.y),o)}
 for(const t of txs){const a=Math.min(1,t.l*2.2),pop=t.big?1+Math.max(0,t.l-.8)*2.5:1;g.globalAlpha=a;g.save();g.translate(Math.round(t.x-cam.x),Math.round(t.y-cam.y));g.scale(pop,pop);T(String(t.s),0,0,{sz:t.big?10:t.n?7.5:7,c:t.c,sc:'#000',sw:2.2,f:FD});g.restore()}g.globalAlpha=1;
 scrText();
 
@@ -2000,7 +2000,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23g</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23h</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7252,7 +7252,7 @@ if(CFG.perf==null){CFG.perf=XBOX29?1:0;if(CFG.perf)PERFON29()}
 {let last=CFG.perf|0;
  const _a=applyCFG;applyCFG=function(){_a.apply(this,arguments);try{const p=CFG.perf|0;if(p!==last){last=p;if(p)PERFON29();else PERFOFF29();try{saveCFG()}catch(e){}try{fit()}catch(e){}}document.documentElement.classList.toggle('perf29',!!p);const f=Math.max(.6,Math.min(1,CFG.fov==null?1:CFG.fov));const el=document.documentElement.style;el.setProperty('--fovz',String(1/f));document.body&&document.body.classList.toggle('nofov',f>=.999)}catch(e){}};
  const st=document.createElement('style');st.textContent='body.nofov #cv,body.nofov #tcv{transform:none!important}.perf29 *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.perf29 #cv,.perf29 #tcv{image-rendering:pixelated}#scrt27{will-change:transform,opacity;contain:layout paint}.perf29 #scrt27 b,.perf29 #scrt27 i{text-shadow:0 2px 0 #000!important}';document.head.appendChild(st);
- const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min((typeof MOB28!='undefined'&&MOB28)?1024:(typeof XBOX29!="undefined"&&XBOX29)?960:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
+ const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min(CFG.tcap||9999,(typeof MOB28!='undefined'&&MOB28)?1024:(typeof XBOX29!="undefined"&&XBOX29)?960:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;const add=seg('perf','Performance mode',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)};
  try{applyCFG()}catch(e){}}
 
@@ -7371,7 +7371,7 @@ try{if(window.PLAT31=='xbox'&&CFG.gpzm!==1){CFG.gpzm=1;if(CFG.gpz==null||CFG.gpz
   const add=seg('wide','Screen fill',[[1,'Fill the screen'],[0,'Keep 16:9 (bars)']])+seg('arf','Auto refresh to 60 FPS',[[1,'On'],[0,'Off']]);return h.slice(0,s+17)+add+h.slice(s+17)};
  /* console auto-refresh: when frames fall under 50 FPS, switch Auto performance and Performance mode off and on again */
  let fr=0,t0=performance.now(),low=0,cool=0,refreshes=0;
- const refresh=()=>{try{refreshes++;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
+ let lastRf=0,streak=0;const refresh=()=>{try{refreshes++;const nw=performance.now();streak=nw-lastRf<100000?streak+1:1;lastRf=nw;if(streak>=3&&!CFG.tcap&&isCon()){CFG.tcap=720;msg&&0}if(streak>=6&&CFG.tcap===720&&isCon())CFG.tcap=560;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
    setTimeout(()=>{try{CFG.perf=1;CFG.aq=1;applyCFG();saveCFG();window.RFR29=refreshes}catch(e){}},60)}catch(e){}};
  window.refresh29=refresh;
  setInterval(()=>{try{if(CFG.arf&&isCon()&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&performance.now()-(window.__lastRf36||0)>150000){window.__lastRf36=performance.now();canvasRefresh36()}}catch(e){}},20000);
@@ -7486,6 +7486,8 @@ window.PERFX36=()=>{try{return CFG.perf&&(XBOX29||MOB28)}catch(e){return false}}
 {const D=window.PD36={u:0,d:0,l:0,su:0,sd:0,n:0};const _u=update,_d=draw;
  update=function(a){const t=performance.now();_u.apply(this,arguments);const e=performance.now()-t;D.su+=e;D.u=D.su/Math.max(1,D.n+1)};
  draw=function(a){const t=performance.now();_d.apply(this,arguments);const e=performance.now()-t;D.sd+=e;D.n++;D.d=D.sd/D.n;D.u=D.su/D.n;if(e>12)D.l++}}
+/* hard caps on decorative particles so ultimates/swarms cannot snowball the frame time */
+{const _pp=pts.push;pts.push=function(){const cap=(window.PERFX36&&window.PERFX36())?240:800;if(pts.length>=cap)return pts.length;return _pp.apply(this,arguments)}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
