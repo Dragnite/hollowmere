@@ -194,7 +194,7 @@ const KB14={inv:{},any:0,listen:null,onKey:null};
 var SV_MAX=12,SV_KEY='hm6s',SV_BAK='hm6b',SV_IDX='hm6i',svErr='',svLast=0,svBakT={};
 /* ===== CORE ===== */
 const $=i=>document.getElementById(i),R=(a,b)=>a+Math.random()*(b-a),RI=(a,b)=>Math.floor(R(a,b+.999)),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-let VW=480;const cv=$('cv'),x=cv.getContext('2d'),VH=270,G=$('g'),mf=m=>440*Math.pow(2,(m-69)/12);
+let VW=480,x;const cv=$("cv"),VH=270,G=$('g'),mf=m=>440*Math.pow(2,(m-69)/12);x=cv.getContext("2d",{alpha:false});
 const tcv=$('tcv'),tx2=tcv.getContext('2d');let TSC=2;for(const m of['fillText','strokeText','fillRect','strokeRect','drawImage','fill','stroke']){const o=tx2[m];tx2[m]=function(){tx2._d=1;return o.apply(this,arguments)}}tx2._d=1;
 /* ---- settings ---- */
 const CFG={mv:.85,mu:.55,ms:1,mi:.8,shake:1,cin:2,dmg:1,fps:0,font:'RSUF',uis:1,pq:2,glow:1,vig:1,wea:1,smooth:0,tips:1,hp:1,pop:1};
@@ -2000,7 +2000,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23f</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23g</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -6886,7 +6886,7 @@ const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live fr
    case'tut':P.sysSeen={};P.tut=P.tut||{};msg('Tutorial popups reset');break;
    case'exp':{const s=JSON.stringify({P,S,zone});if(navigator.clipboard)navigator.clipboard.writeText(s).then(()=>msg('Copied '+Math.round(s.length/1024)+' KB'),()=>msg('Clipboard blocked'));else msg('Clipboard unavailable');break}
    case'sv':save();msg('Saved');break;
-   case'perf':{let o=document.getElementById('perf27');if(o){o.remove();clearInterval(window.__perf27);break}o=document.createElement('div');o.id='perf27';o.style.cssText='position:fixed;left:6px;top:6px;z-index:9998;background:#000c;color:#9fffb0;font:11px monospace;padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';document.body.appendChild(o);let n=0,t0=performance.now(),mx=0,l=t0;const f=()=>{if(!document.getElementById('perf27'))return;const t=performance.now();mx=Math.max(mx,t-l);l=t;n++;requestAnimationFrame(f)};requestAnimationFrame(f);window.__perf27=setInterval(()=>{const t=performance.now(),fps=n/((t-t0)/1000);o.textContent='FPS '+fps.toFixed(0)+'  worst frame '+mx.toFixed(0)+' ms\nenemies '+(M&&M.en?M.en.length:0)+'  fx '+fxs.length+'\nparticles '+pts.length;n=0;t0=t;mx=0},500);break}
+   case'perf':{let o=document.getElementById('perf27');if(o){o.remove();clearInterval(window.__perf27);break}o=document.createElement('div');o.id='perf27';o.style.cssText='position:fixed;left:6px;top:6px;z-index:9998;background:#000c;color:#9fffb0;font:11px monospace;padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';document.body.appendChild(o);let n=0,t0=performance.now(),mx=0,l=t0;const f=()=>{if(!document.getElementById('perf27'))return;const t=performance.now();mx=Math.max(mx,t-l);l=t;n++;requestAnimationFrame(f)};requestAnimationFrame(f);window.__perf27=setInterval(()=>{const t=performance.now(),fps=n/((t-t0)/1000);const D=window.PD36||{};o.textContent='FPS '+fps.toFixed(0)+'  worst frame '+mx.toFixed(0)+' ms\nupdate '+(D.u||0).toFixed(1)+' ms  draw '+(D.d||0).toFixed(1)+' ms  long '+(D.l||0)+'\nenemies '+(M&&M.en?M.en.length:0)+'  fx '+fxs.length+'  particles '+pts.length+'\n'+innerWidth+'x'+innerHeight+' dpr '+devicePixelRatio+' tcv '+tcv.width+' hz '+(window.HZ29||'?')+(performance.memory?'  heap '+Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'')+'\nplat '+(window.PLAT31||'?')+' perf '+CFG.perf+' refreshes '+(window.RFR29||0);if(window.PD36){D.l=0;D.su=0;D.sd=0;D.n=0}n=0;t0=t;mx=0},500);break}
    case'lowfx':CFG.pq=((CFG.pq==null?2:CFG.pq)+1)%3;saveCFG();applyCFG();msg('Particle quality: '+['Low','Medium','High'][CFG.pq]);break;
    case'sp25':case'sp100':case'sp250':{if(dun||inTown()||M.sea){msg('Go into the wild first');break}const n=+a.slice(2),ml=Math.max(M.en.length?M.en[0].ml:ZN[zone].lv,1);for(let i=0;i<n;i++){let px,py,t=0;do{const an=Math.random()*6.283,r=120+Math.random()*180;px=P.x+Math.cos(an)*r;py=P.y+Math.sin(an)*r}while(blocked(px,py)&&t++<20);spawnEn(ml,px,py,false)}msg('Spawned '+n+' (total '+M.en.length+')');break}
    case'spclr':M.en=[];msg('Enemies removed');break;
@@ -7252,7 +7252,7 @@ if(CFG.perf==null){CFG.perf=XBOX29?1:0;if(CFG.perf)PERFON29()}
 {let last=CFG.perf|0;
  const _a=applyCFG;applyCFG=function(){_a.apply(this,arguments);try{const p=CFG.perf|0;if(p!==last){last=p;if(p)PERFON29();else PERFOFF29();try{saveCFG()}catch(e){}try{fit()}catch(e){}}document.documentElement.classList.toggle('perf29',!!p);const f=Math.max(.6,Math.min(1,CFG.fov==null?1:CFG.fov));const el=document.documentElement.style;el.setProperty('--fovz',String(1/f));document.body&&document.body.classList.toggle('nofov',f>=.999)}catch(e){}};
  const st=document.createElement('style');st.textContent='body.nofov #cv,body.nofov #tcv{transform:none!important}.perf29 *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.perf29 #cv,.perf29 #tcv{image-rendering:pixelated}#scrt27{will-change:transform,opacity;contain:layout paint}.perf29 #scrt27 b,.perf29 #scrt27 i{text-shadow:0 2px 0 #000!important}';document.head.appendChild(st);
- const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min((typeof MOB28!='undefined'&&MOB28)?1024:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
+ const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min((typeof MOB28!='undefined'&&MOB28)?1024:(typeof XBOX29!="undefined"&&XBOX29)?960:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;const add=seg('perf','Performance mode',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)};
  try{applyCFG()}catch(e){}}
 
@@ -7371,9 +7371,11 @@ try{if(window.PLAT31=='xbox'&&CFG.gpzm!==1){CFG.gpzm=1;if(CFG.gpz==null||CFG.gpz
   const add=seg('wide','Screen fill',[[1,'Fill the screen'],[0,'Keep 16:9 (bars)']])+seg('arf','Auto refresh to 60 FPS',[[1,'On'],[0,'Off']]);return h.slice(0,s+17)+add+h.slice(s+17)};
  /* console auto-refresh: when frames fall under 50 FPS, switch Auto performance and Performance mode off and on again */
  let fr=0,t0=performance.now(),low=0,cool=0,refreshes=0;
- const refresh=()=>{try{refreshes++;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}
+ const refresh=()=>{try{refreshes++;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
    setTimeout(()=>{try{CFG.perf=1;CFG.aq=1;applyCFG();saveCFG();window.RFR29=refreshes}catch(e){}},60)}catch(e){}};
  window.refresh29=refresh;
+ setInterval(()=>{try{if(CFG.arf&&isCon()&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&performance.now()-(window.__lastRf36||0)>150000){window.__lastRf36=performance.now();canvasRefresh36()}}catch(e){}},20000);
+ window.__lastRf36=performance.now();
  const tick=()=>{fr++;const t=performance.now();if(t-t0>=2500){const f=fr*1000/(t-t0);fr=0;t0=t;
    if(CFG.arf&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&(window.HZ29||60)>=55&&CFG.perf!==0){if(f<50)low++;else low=0;if(low>=2&&t>cool){low=0;cool=t+15000;refresh()}}else low=0}
   requestAnimationFrame(tick)};requestAnimationFrame(tick);
@@ -7408,6 +7410,82 @@ kbIn27=function(e){try{if(!e.isTrusted||GP.snd)return false;const now=performanc
  try{const uy=ultYell;ultYell=function(){if(CFG.perf){const a=arguments;setTimeout(()=>{try{uy.apply(this,a)}catch(e){}},30)}else return uy.apply(this,arguments)}}catch(e){}
  try{const uv=ultVoice13;ultVoice13=function(){if(CFG.perf){const a=arguments;setTimeout(()=>{try{uv.apply(this,a)}catch(e){}},90)}else return uv.apply(this,arguments)}}catch(e){}
 }
+
+// zz36: automatic static-prop sprite cache (cuts thousands of fillRect/ellipse calls per frame)
+const PC36={on:0,bad:new Set(),re:0,ok:new Map(),inst:new WeakMap(),made:0,fr:-1,hit:0,miss:0};
+const OX36=120,OY36=200,CW36=240,CH36=230;
+function pcRender36(p,ctx){const sx=x,sc=cam.x,sy=cam.y;x=ctx;cam.x=p.x-OX36;cam.y=p.y-OY36;try{_dp36(p)}finally{x=sx;cam.x=sc;cam.y=sy}}
+function pcTest36(p){const t0=tm,N=4,ts=[t0,t0+.37,t0+1.11,t0+1.93],im=[];
+ try{for(let i=0;i<N;i++){const c=document.createElement('canvas');c.width=CW36;c.height=CH36;const g=c.getContext('2d',{willReadFrequently:true});tm=ts[i];pcRender36(p,g);im.push(g.getImageData(0,0,CW36,CH36).data)}}finally{tm=t0}
+ const A=im[0];let stat=1,x0=CW36,y0=CH36,x1=-1,y1=-1;
+ for(let i=0,n=A.length;i<n;i+=4){for(let k=1;k<N;k++){const B=im[k];if(A[i]!==B[i]||A[i+1]!==B[i+1]||A[i+2]!==B[i+2]||A[i+3]!==B[i+3]){stat=0;break}}
+  for(let k=0;k<N;k++)if(im[k][i+3]){const q=i>>2,X=q%CW36,Y=(q/CW36)|0;if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y;break}}
+ if(x1<0)return{empty:1};if(x0<=0||y0<=0||x1>=CW36-1||y1>=CH36-1)return null;
+ const pd=stat?3:7;x0=Math.max(0,x0-pd);y0=Math.max(0,y0-pd);x1=Math.min(CW36-1,x1+pd);y1=Math.min(CH36-1,y1+pd);
+ if(!stat&&(x1-x0)*(y1-y0)>150*150)return null;
+ return{x0,y0,w:x1-x0+1,h:y1-y0+1,anim:!stat}}
+const _dp36=dprop;
+const AQ36=10;
+dprop=function(p){
+ if(!PC36.on||CFG.pcache===0){_dp36(p);return}
+ const n=p.n;if(PC36.bad.has(n)||p.cut!==undefined||p.cd!==undefined||p.v!==undefined||p.fg){_dp36(p);return}
+ const sx=p.x-cam.x,sy=p.y-cam.y;if(sx<-90||sx>VW+90||sy<-30||sy>VH+170)return;
+ let c=PC36.inst.get(p);
+ const fr=(typeof frameN!=='undefined'?frameN:tm);if(PC36.fr!==fr){PC36.fr=fr;PC36.made=0;PC36.re=0}
+ if(!c){
+  let bb=PC36.ok.get(n);
+  if(bb===undefined){bb=pcTest36(p);if(!bb){PC36.bad.add(n);_dp36(p);return}PC36.ok.set(n,bb)}
+  if(bb.empty){return}
+  if(PC36.made>=6){_dp36(p);return}PC36.made++;
+  c=document.createElement('canvas');c.width=bb.w;c.height=bb.h;c.ox=OX36-bb.x0;c.oy=OY36-bb.y0;c.bb=bb;c.st=-1;PC36.inst.set(p,c);
+ }
+ const bb=c.bb;
+ if(bb.anim){
+  const st=Math.floor(tm*AQ36+(p.x*.37%1));
+  if(c.st!==st&&(c.st<0&&PC36.made<12||c.st>=0&&PC36.re<14)){
+   if(c.st<0)PC36.made++;else PC36.re++;
+   const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);const sx0=x,cx=cam.x,cy=cam.y,t0=tm;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;tm=st/AQ36;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy;tm=t0}c.st=st}
+  if(c.st<0){_dp36(p);return}
+ }else if(c.st<0){const g=c.getContext('2d');const sx0=x,cx=cam.x,cy=cam.y;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy}c.st=0}
+ x.drawImage(c,Math.round(sx-c.ox),Math.round(sy-c.oy));PC36.hit++;
+};
+window.PC36=PC36;
+// text label sprite cache: strokeText+fillText are very costly; rasterise each distinct label once
+const TC36={seen:new Map(),m:new Map(),made:0,fr:-1,hit:0,on:1};
+const _T36=T;
+T=function(s,px,py,o){
+ if(!TC36.on||CFG.tcache===0||typeof s!=='string'&&typeof s!=='number'||s===''){return _T36(s,px,py,o)}
+ s=String(s);const g=tx2,m=g.getTransform();
+ if(m.b||m.c||Math.abs(m.a-TSC)>.01||s.length>60||(o.c&&typeof o.c!=='string')||(o.sc&&typeof o.sc!=='string')||document.fonts&&document.fonts.status==='loading'){return _T36(s,px,py,o)}
+ const sc=m.a,sz=o.sz||7,f=o.f||FB(),al=o.al||'center',bl=o.bl||'alphabetic',sw=o.sw===0?0:(o.sw||1.6),col=o.c||'#fff',scol=o.sc||'#000';
+ const k=s+'|'+sz+f+al+bl+sw+scol+col+'|'+sc.toFixed(3);
+ let e=TC36.m.get(k);
+ if(!e){
+  if(TC36.seen.size>3000)TC36.seen.clear();const sn=(TC36.seen.get(k)||0)+1;TC36.seen.set(k,sn);if(sn<3)return _T36(s,px,py,o);
+  const fr=typeof frameN!=='undefined'?frameN:tm;if(TC36.fr!==fr){TC36.fr=fr;TC36.made=0}
+  if(TC36.made>=8)return _T36(s,px,py,o);TC36.made++;
+  if(TC36.m.size>700)TC36.m.clear();
+  g.font=sz+'px '+f;const mw=g.measureText(s).width;const pad=Math.ceil((sw+2)*sc)+1,W=Math.ceil(mw*sc)+pad*2+2,H=Math.ceil(sz*sc*3)+pad*2;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const q=c.getContext('2d');q.setTransform(sc,0,0,sc,0,0);
+  const ax=(al==='left'||al==='start')?pad/sc:(al==='right'||al==='end')?(W-pad)/sc:W/2/sc,ay=H/2/sc;
+  q.font=sz+'px '+f;q.textAlign=al;q.textBaseline=bl;if(sw){q.lineJoin='round';q.lineWidth=sw;q.strokeStyle=scol;q.strokeText(s,ax,ay)}q.fillStyle=col;q.fillText(s,ax,ay);
+  e={c,ax:ax*sc,ay:ay*sc};TC36.m.set(k,e)}
+ TC36.hit++;
+ const dx=Math.round(m.e+px*sc-e.ax),dy=Math.round(m.f+py*sc-e.ay);
+ const ga=g.globalAlpha;if(o.a!=null)g.globalAlpha=o.a;
+ const sm=g.imageSmoothingEnabled;g.setTransform(1,0,0,1,0,0);g.drawImage(e.c,dx,dy);g.setTransform(m);
+ if(o.a!=null)g.globalAlpha=1;
+};
+window.TC36=TC36;
+
+/* force the browser to throw away and re-create the GPU backing stores + sprite caches (what toggling performance mode used to do by accident) */
+window.canvasRefresh36=function(){try{for(const c of[tcv,cv]){const w=c.width;c.width=0;c.width=w}tx2._d=1;try{SHD22.clear()}catch(e){}TC36.m.clear();TC36.seen.clear();PC36.inst=new WeakMap();for(const k in GC)delete GC[k];if(typeof fit=='function')fit()}catch(e){}};
+window.PERFX36=()=>{try{return CFG.perf&&(XBOX29||MOB28)}catch(e){return false}};
+
+/* frame-cost collector (cheap: two performance.now() per frame) feeding the admin perf overlay */
+{const D=window.PD36={u:0,d:0,l:0,su:0,sd:0,n:0};const _u=update,_d=draw;
+ update=function(a){const t=performance.now();_u.apply(this,arguments);const e=performance.now()-t;D.su+=e;D.u=D.su/Math.max(1,D.n+1)};
+ draw=function(a){const t=performance.now();_d.apply(this,arguments);const e=performance.now()-t;D.sd+=e;D.n++;D.d=D.sd/D.n;D.u=D.su/D.n;if(e>12)D.l++}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
