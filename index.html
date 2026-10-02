@@ -1997,7 +1997,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.22z</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23a</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7151,8 +7151,21 @@ setInterval(()=>{try{const h=document.getElementById('hud');if(!h)return;const c
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row),e=h.indexOf('<small class="dim">',k);if(k<0||e<0)return h;return h.slice(0,e).replace(/<\/div>\s*$/,seg('aq','Auto performance',[[1,'On'],[0,'Off']])+'</div>')+h.slice(e)}}
 
 /* ===== v14.22: touch controls (virtual joystick + action buttons) for phones and tablets ===== */
-const MOB28=(()=>{try{const ua=navigator.userAgent||'';if(/Xbox|PlayStation|Nintendo|SMART-TV|SmartTV|Tizen|WebOS|AppleTV|CrKey/i.test(ua))return false;if(/Android|iPhone|iPod|iPad/i.test(ua))return true;return navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1}catch(e){return false}})();
-{ if(CFG.tch==null||CFG.tchv!==3){if(CFG.tchv!==3&&!MOB28)CFG.tch=0;else if(CFG.tch==null)CFG.tch=MOB28?1:0;CFG.tchv=3;try{saveCFG()}catch(e){}}
+/* platform detection: one source of truth. Xbox Edge can report a Linux/Android style user agent, so a UA alone is not trusted */
+const PLATD=(()=>{try{const ua=navigator.userAgent||'',mt=navigator.maxTouchPoints||0,sw=Math.max(screen.width||0,screen.height||0),ov=CFG.platov;
+ if(ov=='xbox'||ov=='mobile'||ov=='desktop')return ov;
+ if(/Xbox/i.test(ua))return 'xbox';
+ if(/PlayStation|Nintendo|SMART-TV|SmartTV|Tizen|WebOS|AppleTV|CrKey|AFT[A-Z]|BRAVIA|GoogleTV|Android TV/i.test(ua))return 'console';
+ if(/Android|iPhone|iPod|iPad/i.test(ua)){
+  /* a real phone or tablet has a touch screen; a console or TV browser pretending to be Android does not */
+  if(/Android/i.test(ua)&&mt===0)return 'xbox';
+  if(/Android/i.test(ua)&&!/Mobile/i.test(ua)&&sw>=1900&&!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return 'xbox';
+  return 'mobile'}
+ if(navigator.platform==='MacIntel'&&mt>1)return 'mobile';
+ return 'desktop'}catch(e){return 'desktop'}})();
+const MOB28=PLATD==='mobile';
+{ if(CFG.tchm===1&&!MOB28){CFG.tch=0;CFG.tchm=0;try{saveCFG()}catch(e){}}if(MOB28&&CFG.tchm!==1){CFG.tchm=1;if(CFG.platov=='mobile')CFG.tch=1}
+  if(CFG.tch==null||CFG.tchv!==3){if(CFG.tchv!==3&&!MOB28)CFG.tch=0;else if(CFG.tch==null)CFG.tch=MOB28?1:0;CFG.tchv=3;try{saveCFG()}catch(e){}}
   DEF16.tcz=1;DEF16.tco=.8;
   const tOn=()=>!!CFG.tch;
   /* settings > Controls: toggle, size, opacity (never shown as active on a PC unless the player turns it on) */
@@ -7227,7 +7240,7 @@ body.tch #cv,body.tch #g{touch-action:none}`;
 }
 
 /* ===== v14.22u: Xbox / Performance mode ===== */
-const XBOX29=(()=>{try{return /Xbox/i.test(navigator.userAgent||'')}catch(e){return false}})();
+const XBOX29=(PLATD==='xbox'||PLATD==='console');
 DEF16.perf=XBOX29?1:0;
 const PERFON29=()=>{if(!CFG.perfPrev)CFG.perfPrev={fcap:CFG.fcap==null?0:CFG.fcap,vig:CFG.vig==null?1:CFG.vig,wea:CFG.wea==null?1:CFG.wea,pq:CFG.pq==null?2:CFG.pq,glow:CFG.glow==null?1:CFG.glow};CFG.fcap=60;CFG.vig=0;CFG.wea=0;if(CFG.pq>1)CFG.pq=1};
 const PERFOFF29=()=>{const o=CFG.perfPrev;if(o){CFG.fcap=o.fcap;CFG.vig=o.vig;CFG.wea=o.wea;CFG.pq=o.pq;CFG.glow=o.glow;delete CFG.perfPrev}else{CFG.fcap=0;CFG.vig=1;CFG.wea=1;CFG.pq=2;CFG.glow=1}};
@@ -7304,7 +7317,7 @@ body.tedit28 #ted28{display:flex}
 
 /* ===== v14.22x: platform detection, per-platform graphics profile, refresh-rate check on every run ===== */
 const IOS31=(()=>{try{const u=navigator.userAgent||'';return /iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}catch(e){return false}})();
-const PLAT31=XBOX29?'xbox':MOB28?(IOS31?'ios':'android'):'desktop';
+const PLAT31=XBOX29?'xbox':MOB28?(IOS31?'ios':'android'):'desktop';if(!CFG.platov)CFG.platov='auto';
 window.PLAT31=PLAT31;window.HZ29=60;
 {
  /* 1. first run on this platform: apply its graphics profile */
@@ -7321,7 +7334,8 @@ window.PLAT31=PLAT31;window.HZ29=60;
  /* 4. every run, a few seconds into play: if frames are slow start from a lighter profile straight away */
  let did=0;const iv=setInterval(()=>{try{if(!started||did)return;if(!window.FPS29)return;did=1;clearInterval(iv);const hz=Math.min(60,window.HZ29||60),tgt=CFG.fcap>0?Math.min(hz,CFG.fcap):hz;if(CFG.aq&&window.FPS29<tgt*.7){if(CFG.pq>0)CFG.pq=0;CFG.vig=0;CFG.wea=0;applyCFG();saveCFG()}}catch(e){}},1500);
  /* 5. settings: show what was detected */
- const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const L={xbox:'Xbox',ios:'iPhone / iPad',android:'Android',desktop:'Computer'}[PLAT31];const e=h.indexOf('<small class="dim">',k);if(e<0)return h;return h.slice(0,e)+`<small class="dim">Detected: ${L}, screen refresh about ${window.HZ29} Hz. Graphics options are tuned for this device on every launch; Auto performance keeps lowering and restoring effects to hold a smooth frame rate.</small>`+h.slice(e)};
+ const _a2=applyCFG;let lastOv=CFG.platov||'auto';applyCFG=function(){_a2.apply(this,arguments);try{const o=CFG.platov||'auto';if(o!==lastOv){lastOv=o;CFG.plat=null;CFG.tchv=null;if(o=='mobile')CFG.tch=1;else CFG.tch=0;saveCFG();setTimeout(()=>location.reload(),150)}}catch(e){}};
+ const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const L={xbox:'Xbox / console',ios:'iPhone / iPad',android:'Android phone or tablet',desktop:'Computer'}[PLAT31];const pv=seg('platov','Device type',[['auto','Auto'],['xbox','Xbox'],['mobile','Phone'],['desktop','Computer']]);const e=h.indexOf('<small class="dim">',k);if(e<0)return h;return h.slice(0,e)+pv+`<small class="dim">Detected: ${L}, screen refresh about ${window.HZ29} Hz. (touch points: ${navigator.maxTouchPoints||0}, screen ${screen.width}x${screen.height}). If the device is wrong, pick it above; the game restarts to apply it. Graphics options are tuned for this device on every launch; Auto performance keeps lowering and restoring effects to hold a smooth frame rate.</small>`+h.slice(e)};
 }
 
 initSlots();try{drawC()}catch(e){}
