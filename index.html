@@ -1544,8 +1544,8 @@ for(const e of M.en){if(f.hit.has(e))continue;if(Math.hypot(e.x-f.x,e.y-14-f.y)<
 if(f.k=='comet'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}
 if(f.k=='arrowf'&&!f.fired&&f.t>=f.d){f.fired=1;burst(f.x,f.y,5,f.c,50);if(f.cb)f.cb()}
 if(f.k=='sword'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}}
-fxs=fxs.filter(f=>f.k=='pj'?f.l>0:f.t<f.d);if(window.XB37&&fxs.length>100){let ex=fxs.length-100;fxs=fxs.filter(f=>f.k=='pj'||ex--<=0)}
-pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});{const PM=window.XB37?130:260;if(pts.length>PM&&window.PERFX36&&window.PERFX36())pts=pts.slice(pts.length-PM)}
+fxs=fxs.filter(f=>f.k=='pj'?f.l>0:f.t<f.d);if(window.XB37&&fxs.length>(window.XSHED?50:100)){let ex=fxs.length-(window.XSHED?50:100);fxs=fxs.filter(f=>f.k=='pj'||ex--<=0)}
+pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});{const PM=window.XB37?(window.XSHED?45:130):260;if(pts.length>PM&&window.PERFX36&&window.PERFX36())pts=pts.slice(pts.length-PM)}
 DEC=DEC.filter(d=>(d.t+=dt)<d.d);
 for(const z of ZNS){z.t+=dt;z.acc+=dt}
 }
@@ -2021,7 +2021,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23ac</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23af</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -6739,11 +6739,13 @@ kbd.g16,b.kc24.g16,.kc.g16{background:none!important;border:0!important;box-shad
  const TX=new WeakMap(),ROOTS='#win,#st,#syspop,#tqb,#prompt,#toast,#chat,#tip,#bot,#evt,#ban,#zgb,#gpHint,#mgintro,#svmg';
  const conv=src=>{const A=nm('KeyE'),S=nm('Space');return src.replace(/\bShift ?\+ ?E\b/g,'LT+'+A).replace(/\bSpace ?[\/,] ?E(?: ?[\/,] ?click| or click)?/g,A).replace(/\b(Press|press|Hold|hold|Tap|tap|Press and hold|Use|use)(\s+(?:the\s+)?)(E|Space|J|R|F|V|Q|G|I|M|C|L|X|T|U)\b(?! ?[a-z\/]{2})/g,(m,v,sp,k)=>v+sp+(nm(CODE(k))||k)).replace(/\bEsc\b(?!ape)/g,nm('Escape')).replace(/\bW ?A ?S ?D(?: or the arrow keys)?|\barrow keys\b/g,'the left stick').replace(/\bSpace ?[\/,] ?E(?: ?[\/,] ?click| or click)?/g,A).replace(/\bclick\b/gi,m=>m=='Click'?'Press':'press').replace(/\bthe mouse\b/g,'the stick').replace(/\bthe the\b/g,'the').replace(/(the left stick)(?: or (?:the )?the left stick)+/g,'$1')};
  function scan24(){try{try{const pm0=padMode16();for(const k of document.querySelectorAll('.tb kbd,#win h2 kbd')){const t=k.dataset.l16||k.textContent.trim();const hide=pm0&&/^[A-Z]$/.test(t)&&!'CLMUXTEIFGQRV'.includes(t);k.style.display=hide?'none':''}}catch(e){}if(!started&&!document.querySelector('#menu:not([hidden])'))return;const pm=padMode16();document.body.classList.toggle('pm24',pm);
+  /* console: remember text nodes that are already converted (or need no conversion) and skip them until their text changes. Without this every scan re-ran ~10 regex replaces over every text node of the chat log, skill bar, windows... (22ms spikes on the console). The memo is dropped whenever the pad/keyboard mode or the bindings change. */
+  let sk=null;if(window.XB37){const sg=(pm?'p':'k')+JSON.stringify(CFG.gpm||0)+JSON.stringify(CFG.kb||0);if(window.__sk24sig!==sg){window.__sk24sig=sg;window.__sk24=new WeakMap()}sk=window.__sk24}
   for(const root of document.querySelectorAll(ROOTS)){
    for(const b of root.querySelectorAll('b,strong')){if(b.classList.contains('kc24')||b.children.length&&!b.classList.contains('g16'))continue;const t=b.textContent.trim();if(KEY.test(t)){b.classList.add('kc24','kc')}}
    if(!pm&&!root.dataset.t24)continue;root.dataset.t24=pm?'1':'';
-   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const todo=[];while(n=w.nextNode()){if(n.parentNode&&/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(n.parentNode.nodeName)||n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains('kc24'))continue;todo.push(n)}
-   for(n of todo){const o=TX.get(n),src=o&&n.data===o.out?o.orig:n.data;if(!pm){if(o&&n.data===o.out){n.data=o.orig;TX.delete(n)}continue}const out=conv(src);if(out!==src){TX.set(n,{orig:src,out});if(n.data!==out)n.data=out}else if(o&&n.data===o.out){n.data=o.orig;TX.delete(n)}}}}catch(e){}}
+   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const todo=[];while(n=w.nextNode()){if(n.parentNode&&/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(n.parentNode.nodeName)||n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains('kc24'))continue;if(sk&&sk.get(n)===n.data)continue;todo.push(n)}
+   for(n of todo){const o=TX.get(n),src=o&&n.data===o.out?o.orig:n.data;if(!pm){if(o&&n.data===o.out){n.data=o.orig;TX.delete(n)}continue}const out=conv(src);if(out!==src){TX.set(n,{orig:src,out});if(n.data!==out)n.data=out}else if(o&&n.data===o.out){n.data=o.orig;TX.delete(n)}}if(sk)for(n of todo)sk.set(n,n.data)}}catch(e){}}
  setInterval(scan24,220)}
 {const st=document.createElement('style');st.textContent='.tb kbd.g16 svg{height:.95em!important}.tb kbd.g16{right:.05em!important;top:.05em!important}.hk .kc.g16 svg{height:1.15em!important}.g16 .pl{font-size:.7em}';document.head.appendChild(st)}
 
@@ -6876,7 +6878,7 @@ setInterval(()=>{try{const pm=typeof padMode16=='function'&&padMode16(),OK='CLMU
 <fieldset><legend>Teleport &amp; recovery</legend><button data-z27="town">Go to this zone's town</button><button data-z27="safe">Clear all enemies &amp; heal</button><button data-z27="buffs">Clear all buffs</button><button data-z27="tut">Reset tutorial steps</button></fieldset>
 <fieldset><legend>Save data</legend><div class="hint27">Copy your current hero as text for backups or bug reports.</div><button data-z27="exp">Copy save to clipboard</button><button data-z27="sv">Save now</button></fieldset>
 <fieldset><legend>Interface testing</legend><button data-z27="pad">Toggle controller icons</button><button data-z27="osk">Open / close test keyboard</button></fieldset>`;
-const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live frame time, enemy count and effect counts in the corner of the screen.</div><button data-z27="perf">Toggle performance overlay</button><button data-z27="lowfx">Cycle particle quality</button></fieldset>
+const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live frame time, enemy count and effect counts in the corner of the screen.</div><button data-z27="perf">Toggle performance overlay</button><button data-z27="lowfx">Cycle particle quality</button></fieldset><fieldset><legend>Console speed &amp; keep-awake (Xbox)</legend><div class="hint27">CPU speed probe, load shedding and keep-awake status are printed under the performance overlay. Burn test simulates a throttled console (adds about 12 ms of busy work per frame).</div><button data-z27="xburn">Toggle burn test</button><button data-z27="xshed">Force load shedding on/off</button><button data-z27="xlog">Clear speed log</button></fieldset>
 <fieldset><legend>Stress tests</legend><div class="hint27">Spawns enemies around you in the current wild zone.</div><button data-z27="sp25">+25 enemies</button><button data-z27="sp100">+100 enemies</button><button data-z27="sp250">+250 enemies</button><button data-z27="spclr">Remove all enemies</button></fieldset>
 <fieldset><legend>Events</legend><button data-z27="evnow">World event in 5 seconds</button><button data-z27="gob">Spawn treasure goblin</button></fieldset>
 <fieldset><legend>Combat testing</legend><button data-z27="ohk">Toggle one-hit kills</button><button data-z27="nolt">Clear effects &amp; particles</button></fieldset>
@@ -6908,7 +6910,10 @@ const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live fr
    case'tut':P.sysSeen={};P.tut=P.tut||{};msg('Tutorial popups reset');break;
    case'exp':{const s=JSON.stringify({P,S,zone});if(navigator.clipboard)navigator.clipboard.writeText(s).then(()=>msg('Copied '+Math.round(s.length/1024)+' KB'),()=>msg('Clipboard blocked'));else msg('Clipboard unavailable');break}
    case'sv':save();msg('Saved');break;
-   case'perf':{let o=document.getElementById('perf27');if(o){o.remove();clearInterval(window.__perf27);break}o=document.createElement('div');o.id='perf27';o.style.cssText='position:fixed;left:6px;top:6px;z-index:9998;background:#000c;color:#9fffb0;font:11px monospace;padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';document.body.appendChild(o);let n=0,t0=performance.now(),mx=0,l=t0;const f=()=>{if(!document.getElementById('perf27'))return;const t=performance.now();mx=Math.max(mx,t-l);l=t;n++;requestAnimationFrame(f)};requestAnimationFrame(f);window.__perf27=setInterval(()=>{const t=performance.now(),fps=n/((t-t0)/1000);const D=window.PD36||{};o.textContent='FPS '+fps.toFixed(0)+'  worst frame '+mx.toFixed(0)+' ms\nupdate '+(D.u||0).toFixed(1)+' ms  draw '+(D.d||0).toFixed(1)+' ms  long '+(D.l||0)+'\nenemies '+(M&&M.en?M.en.length:0)+'  fx '+fxs.length+'  particles '+pts.length+'\n'+innerWidth+'x'+innerHeight+' dpr '+devicePixelRatio+' tcv '+tcv.width+' hz '+(window.HZ29||'?')+(performance.memory?'  heap '+Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'')+(D.sp&&D.sp.length?'\n'+D.sp.join('\n'):'')+'\nplat '+(window.PLAT31||'?')+' perf '+CFG.perf+' refreshes '+(window.RFR29||0);if(window.PD36){D.l=0;D.su=0;D.sd=0;D.n=0}n=0;t0=t;mx=0},500);break}
+   case'perf':{let o=document.getElementById('perf27');if(o){o.remove();clearInterval(window.__perf27);break}o=document.createElement('div');o.id='perf27';o.style.cssText='position:fixed;left:6px;top:6px;z-index:9998;background:#000c;color:#9fffb0;font:11px monospace;padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';document.body.appendChild(o);let n=0,t0=performance.now(),mx=0,l=t0;const f=()=>{if(!document.getElementById('perf27'))return;const t=performance.now();mx=Math.max(mx,t-l);l=t;n++;requestAnimationFrame(f)};requestAnimationFrame(f);window.__perf27=setInterval(()=>{const t=performance.now(),fps=n/((t-t0)/1000);const D=window.PD36||{};o.textContent='FPS '+fps.toFixed(0)+'  worst frame '+mx.toFixed(0)+' ms\nupdate '+(D.u||0).toFixed(1)+' ms  draw '+(D.d||0).toFixed(1)+' ms  long '+(D.l||0)+'\nenemies '+(M&&M.en?M.en.length:0)+'  fx '+fxs.length+'  particles '+pts.length+'\n'+innerWidth+'x'+innerHeight+' dpr '+devicePixelRatio+' tcv '+tcv.width+' hz '+(window.HZ29||'?')+(performance.memory?'  heap '+Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'')+(D.sp&&D.sp.length?'\n'+D.sp.join('\n'):'')+'\nplat '+(window.PLAT31||'?')+' perf '+CFG.perf+' refreshes '+(window.RFR29||0)+(window.XKA?'\n'+XKA.line():'');if(window.PD36){D.l=0;D.su=0;D.sd=0;D.n=0}n=0;t0=t;mx=0},500);break}
+   case'xburn':{if(!window.XKA){msg('Xbox profile only');break}XKA.burn=!XKA.burn;msg('Burn test '+(XKA.burn?'ON':'OFF'));break}
+   case'xshed':{if(!window.XKA){msg('Xbox profile only');break}XKA.force=XKA.force===1?0:1;msg('Forced shedding '+(XKA.force?'ON':'OFF'));break}
+   case'xlog':{if(!window.XKA){msg('Xbox profile only');break}XKA.log.length=0;msg('Speed log cleared');break}
    case'lowfx':CFG.pq=((CFG.pq==null?2:CFG.pq)+1)%3;saveCFG();applyCFG();msg('Particle quality: '+['Low','Medium','High'][CFG.pq]);break;
    case'sp25':case'sp100':case'sp250':{if(dun||inTown()||M.sea){msg('Go into the wild first');break}const n=+a.slice(2),ml=Math.max(M.en.length?M.en[0].ml:ZN[zone].lv,1);for(let i=0;i<n;i++){let px,py,t=0;do{const an=Math.random()*6.283,r=120+Math.random()*180;px=P.x+Math.cos(an)*r;py=P.y+Math.sin(an)*r}while(blocked(px,py)&&t++<20);spawnEn(ml,px,py,false)}msg('Spawned '+n+' (total '+M.en.length+')');break}
    case'spclr':M.en=[];msg('Enemies removed');break;
@@ -7708,10 +7713,10 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
   const beat=()=>{try{if(typeof AC==='undefined'||!AC)return;
    if(wired!==AC){wired=AC;AC.addEventListener('statechange',()=>{if(AC.state==='running')beat()})}
    if(document.hidden||AC.state!=='running'||(o&&ctx===AC))return;
-   ctx=AC;const g=AC.createGain();g.gain.value=.01;const n=AC.createOscillator();n.type='sine';n.frequency.value=30;n.connect(g);g.connect(AC.destination);n.onended=()=>{if(o===n)o=null};n.start();o=n}catch(e){o=null}};
+   ctx=AC;const g=AC.createGain();g.gain.value=.01;const n=AC.createOscillator();n.type='sine';n.frequency.value=30;n.connect(g);g.connect(AC.destination);n.onended=()=>{if(o===n){o=null;window.XHB=0}};n.start();o=n;window.XHB=1}catch(e){o=null}};
   setInterval(beat,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)beat()})}
  /* particles spawned from draw() never expire while the world is paused: hard cap */
- {const _d=draw;draw=function(a){_d.apply(this,arguments);if(pts.length>400)pts=pts.slice(pts.length-400)}}
+ {const _d=draw;draw=function(a){_d.apply(this,arguments);if(pts.length>(window.XSHED?60:400))pts=pts.slice(pts.length-(window.XSHED?60:400))}}
  /* idle ping: a zero-strength rumble keeps the pad API 'in use' while the stick is still */
  setInterval(()=>{try{if(!started||!GP.on||performance.now()-GP.act<3000)return;const g=navigator.getGamepads()[0]||[...navigator.getGamepads()].find(Boolean);const a=g&&g.vibrationActuator;if(a&&a.playEffect)a.playEffect('dual-rumble',{duration:1,strongMagnitude:0,weakMagnitude:0}).catch(()=>{})}catch(e){}},1000)
  /* the 'auto refresh' loop (drop under 50fps -> reset canvases + toggle perf) was itself causing 150-220ms frames and blank screens on console: off by default (still available in Graphics settings; the refresh at page load stays) */
@@ -7740,7 +7745,7 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
   const _T=T;T=function(){if(window.XTSK)return;return _T.apply(this,arguments)};
   const _dr=draw;let lt=0,lw=0,pd=performance.now();
   draw=function(a){const now=performance.now(),df=Math.min(now-pd,33);pd=now;
-   if(CFG.perf&&started&&M&&P&&tcv.width===lw&&now-lt<33.3-df*.5)window.XTSK=true;else{lt=now;lw=tcv.width}
+   if(CFG.perf&&started&&M&&P&&tcv.width===lw&&now-lt<(window.XSHED?50:33.3)-df*.5)window.XTSK=true;else{lt=now;lw=tcv.width}
    try{return _dr.apply(this,arguments)}finally{window.XTSK=false}}}
  /* Xbox profile: Y-sorted draw list with zero per-frame allocation (no closures/objects/arrays): parallel preallocated arrays, one native numeric sort of packed keys, switch dispatch */
  {const N=1023,K=new Float64Array(N+1),R=new Array(N+1).fill(null),T=new Uint8Array(N+1);let n=0;
@@ -7792,6 +7797,54 @@ itTip=function(it){const base=_it(it);try{if(!P||!it||!it.s||!it.sl)return base;
  const dl=it.il-eq.il,ta=tot(it),tb=tot(eq),pct=tb>0?Math.round((ta/tb-1)*100):0;
  const vd=pct>=8&&rel>0?`<span class="up">Upgrade (${pct>0?'+':''}${pct}% overall)</span>`:pct<=-8&&rel<0?`<span class="dn">Downgrade (${pct}% overall)</span>`:`<span class="eqs">Sidegrade (${pct>0?'+':''}${pct}% overall)</span>`;
  return base.replace(/<\/div>$/,`<div class="cmp"><b>vs. equipped: ${eq.n}${eq.up?' +'+eq.up:''}${dl?` <small>(ilvl ${dl>0?'+':''}${dl})</small>`:''}</b>${rows.join('<br>')}<div class="vd">${vd}</div></div></div>`)}catch(e){return base}}}
+
+/* ===== v14.23af (Xbox only): CPU speed probe, keep-awake options, automatic load shedding ===== */
+if(typeof XBOX29!=='undefined'&&XBOX29){try{
+ if(CFG.xwl==null)CFG.xwl=1;if(CFG.xvid==null)CFG.xvid=0;if(CFG.xshed==null)CFG.xshed=1;
+ const XKA=window.XKA={log:[],burn:false,force:0,speed:1,ref:0,cur:0,shed:0,wl:'off',vid:'off',low:0,n:0,t0:performance.now()};
+ /* 1. CPU speed probe: a fixed block of arithmetic (about 1.5 ms on a fast PC, longer on the console, so timer resolution does not matter) timed twice a second; the current time is the best of the last 4 runs (a 2 second window that ignores one-off garbage-collection hits). speed = fastest time ever seen / current time, so 100% is the console at full clock and 33% means it runs 3x slower. The admin 'burn test' repeats the block 3x to simulate a throttled console. */
+ const run=()=>{const t=performance.now(),r=XKA.burn?3:1;let s=0;for(let q=0;q<r;q++)for(let i=1;i<400001;i++)s+=Math.sqrt(i)*1.0001;XKA.sink=s;return performance.now()-t};
+ const R4=[];let lowN=0,highN=0,sv=null;
+ const setShed=v=>{if(v===XKA.shed)return;XKA.shed=v;window.XSHED=v;const P6=window.XPC36;if(P6){if(v){sv={aq:P6.aq,re:P6.re};P6.aq=3;P6.re=4}else if(sv){P6.aq=sv.aq;P6.re=sv.re;sv=null}}XKA.log.push('shed '+(v?'ON':'off')+' @'+((performance.now()-XKA.t0)/1000).toFixed(0)+'s');if(XKA.log.length>4)XKA.log.shift()};
+ const probe=()=>{try{if(document.hidden)return;R4.push(run());if(R4.length>4)R4.shift();const b=Math.min(...R4);
+  XKA.cur=b;XKA.n++;if(!XKA.ref||b<XKA.ref)XKA.ref=b;
+  const m=Math.min(1,XKA.ref/b);XKA.speed=m;
+  const now=(performance.now()-XKA.t0)/1000;
+  if(m<.6&&!XKA.low&&XKA.n>=12){XKA.low=now;XKA.log.push('slow '+Math.round(m*100)+'% @'+now.toFixed(0)+'s')}
+  else if(m>=.8&&XKA.low){XKA.log.push('back '+Math.round(m*100)+'% @'+now.toFixed(0)+'s ('+(now-XKA.low).toFixed(0)+'s slow)');XKA.low=0}
+  if(XKA.log.length>4)XKA.log.shift();
+  /* 3. load shedding with hysteresis: under 50% for 4 probes in a row (2 s) -> shed; over 80% for 10 in a row (5 s) -> restore. Nothing happens in the first 6 s while the reference settles. */
+  if(XKA.force===1)setShed(1);
+  else if(CFG.xshed===0)setShed(0);
+  else{if(m<.5&&XKA.n>=12)lowN++;else lowN=0;if(m>.8)highN++;else highN=0;if(!XKA.shed&&lowN>=4)setShed(1);else if(XKA.shed&&highN>=10)setShed(0)}
+ }catch(e){}};
+ setInterval(probe,500);
+ /* what shedding does (everything is reversible and never touches saved settings): particle cap 130->45 and effect cap 100->50 (35_fx.js), draw-time particle cap 400->60 and text layer 30Hz->20Hz (89_zz39.js), animated props 6Hz->3Hz with at most 4 re-renders per frame (above), and decorative glow sprites are skipped (below) */
+ {const _gl=glow;glow=function(px,py,r,c,a,t){if(window.XSHED&&(t===undefined||t===x))return;return _gl.apply(this,arguments)}}
+ {const _d=draw;draw=function(){if(XKA.burn){const e=performance.now()+12;while(performance.now()<e);}return _d.apply(this,arguments)}}
+ /* 2a. Screen Wake Lock */
+ let wl=null;
+ const wlSync=async()=>{try{if(!CFG.xwl){if(wl){try{await wl.release()}catch(e){}wl=null}XKA.wl='off';return}
+  if(!navigator.wakeLock){XKA.wl='n/a';return}if(document.hidden)return;if(wl&&!wl.released){XKA.wl='held';return}
+  wl=await navigator.wakeLock.request('screen');XKA.wl='held';wl.addEventListener('release',()=>{XKA.wl='lost';wl=null})}catch(e){XKA.wl='err:'+((e&&e.name)||'?')}};
+ /* 2b. hidden video: a 2x2px, nearly transparent, muted video fed from a tiny canvas stream, so the console sees active media playback */
+ let vd=null,vt=0;
+ const vidSync=()=>{try{if(!CFG.xvid){if(vd){try{vd.pause()}catch(e){}vd.srcObject=null;vd.remove();vd=null;clearInterval(vt)}XKA.vid='off';return}
+  if(vd){XKA.vid=vd.paused?'paused':'playing';if(vd.paused&&!document.hidden)vd.play().catch(()=>{});return}
+  const vc=document.createElement('canvas');vc.width=vc.height=8;if(!vc.captureStream){XKA.vid='n/a';return}
+  const g=vc.getContext('2d');let f=0;vt=setInterval(()=>{f^=1;g.fillStyle=f?'#101010':'#202020';g.fillRect(0,0,8,8)},250);
+  vd=document.createElement('video');vd.muted=true;vd.loop=true;vd.setAttribute('playsinline','');vd.setAttribute('aria-hidden','true');vd.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.02;pointer-events:none;z-index:-1';
+  vd.srcObject=vc.captureStream(4);document.body.appendChild(vd);vd.play().then(()=>{XKA.vid='playing'}).catch(e=>{XKA.vid='err:'+((e&&e.name)||'?')})}catch(e){XKA.vid='err:'+((e&&e.name)||'?')}};
+ const sync=()=>{wlSync();vidSync()};
+ setInterval(sync,2000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
+ {const _a=applyCFG;applyCFG=function(){const r=_a.apply(this,arguments);try{sync()}catch(e){}return r}}
+ /* settings: three switches at the top of the Performance block in Graphics */
+ {const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;
+  const add=seg('xwl','Wake Lock',[[1,'On'],[0,'Off']])+seg('xvid','Keep-awake video',[[1,'On'],[0,'Off']])+seg('xshed','Load shedding',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)}}
+ /* admin / overlay text */
+ XKA.line=()=>{const s=XKA.speed;return 'cpu '+Math.round(s*100)+'% (now '+XKA.cur.toFixed(2)+'ms ref '+XKA.ref.toFixed(2)+'ms)'+(XKA.low?' SLOW '+(((performance.now()-XKA.t0)/1000)-XKA.low).toFixed(0)+'s':'')+' | shed '+(XKA.shed?'ON':'off')+(XKA.force?' (forced)':'')+(XKA.burn?' | BURN TEST':'')+'\nkeep-awake: heartbeat '+(window.XHB?'on':'OFF')+' | wakelock '+XKA.wl+' | video '+XKA.vid+(XKA.log.length?'\n'+XKA.log.join(' | '):'')};
+ sync();
+}catch(e){console.error('zz41',e)}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
