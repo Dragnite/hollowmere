@@ -1661,7 +1661,7 @@ let wk='',selId=0,smith=0,mtab='buy',ttab='skills',stab='audio',impMsg='',W3=nul
 const ecost=it=>({o:Math.ceil(Math.pow(1.28,it.up)*(1+it.r*.5)*2),g:Math.ceil(Math.pow(1.32,it.up)*it.il*9),sh:(it.up+1)%10==0?(it.up+1)/10:0}),ech=it=>it.up<5?1:Math.min(1,Math.max(.3,1-(it.up-4)*.07)+(it.fp||0)*.05);
 const fnd=id=>!P?null:[...P.inv,...Object.values(P.eq),...(P.stash||[])].find(i=>i&&i.id==id);
 const itTip0=it=>`<div class="tp" style="border-color:${RCL[it.r]}"><b style="color:${RCL[it.r]}">${it.n}${it.up?' +'+it.up:''}</b>${stars(it)}<br><small>${RN[it.r]} ${SLN[it.sl]} | ilvl ${it.il} | x${sm(it).toFixed(2)}</small><br>${it.s.map(([k,v])=>`<span class="${k==it.s[0][0]&&it.bs?'bs':''}">${fmt(k,v*sm(it))}</span>`).join('<br>')}</div>`;
-const itTip=it=>itTip0(it).replace(/<\/div>$/,durRow(it)+'</div>');
+let itTip=it=>itTip0(it).replace(/<\/div>$/,durRow(it)+'</div>');
 const slot=(it,s,sel)=>it?`<button class="sl ${sel?'sel':''}" data-a="sel:${it.id}" data-tip="it:${it.id}" style="border-color:${RCL[it.r]};box-shadow:inset 0 0 .6em ${RCL[it.r]}88">${ico(it)}${it.lk?ic('i_lock','#ffd24a','#fff','lk'):''}<small>${it.up?'+'+it.up:''}</small></button>`:`<div class="sl em">${s||''}</div>`;
 const WIN={spec:{t:'Specialisations',ic:'i_talent',k:'N'},party:{t:'Party',ic:'i_char',k:'P'},boon:{t:'Choose a Boon',ic:'nova',k:''},gear:{t:'Equipment & Bag',ic:'i_bag',k:'I'},smith:{t:'Blacksmith',ic:'hammer',k:''},merch:{t:'Merchant',ic:'i_coin',k:''},train:{t:'Trainer',ic:'i_book',k:''},talent:{t:'Talents',ic:'i_talent',k:'K'},char:{t:'Character',ic:'i_char',k:'C'},skills:{t:'Skill Book',ic:'i_book',k:'B'},map:{t:'World Map',ic:'i_map',k:'M'},menu:{t:'Settings',ic:'i_gear',k:'Esc'},help:{t:'Help & Controls',ic:'i_help',k:'F1'},dask:{t:'The Delve',ic:'skull',k:''},relic:{t:'Choose a Relic',ic:'nova',k:''},dsum:{t:'Delve Summary',ic:'skull',k:''}};
 const box=(k,b,w,title)=>`<div class="wn pn" style="width:${w}em"><h2>${ic(WIN[k].ic,CL[P?P.c:'W'].c)}<span>${title||WIN[k].t}</span>${WIN[k].k?`<kbd>${WIN[k].k}</kbd>`:''}<button data-a="x" data-tip="ui:close">${ic('i_x')}</button></h2><div class="bd">${b}</div></div>`;
@@ -2016,7 +2016,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23q</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23s</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -2528,7 +2528,7 @@ const _de0=drawEn;
 drawEn=function(e){_de0(e);if(!e.gob)return;const sx=e.x-cam.x,sy=e.y-cam.y;if(sx<-30||sx>VW+30||sy<-30||sy>VH+30)return;const t=tm*5+e.id;x.fillStyle='rgba(255,210,74,.18)';x.beginPath();x.ellipse(sx,sy+1,12,5,0,0,7);x.fill();for(let i=0;i<4;i++){const a=t+i*1.57,r=9+Math.sin(t*1.3+i)*2;x.fillStyle=i%2?'#fff3a0':'#ffd24a';x.fillRect(sx+Math.cos(a)*r-1,sy-12+Math.sin(a)*r*.6,2,2)}x.fillStyle='#ffd24a';x.fillRect(sx-1,sy-30+Math.sin(t)*1.5,3,5)};
 /* ---- world events ---- */
 function evStart(k){if(M.ev||dun||inTown())return;const z=ZN[zone],ml=M.en.length?M.en[0].ml:z.lv;
- if(k=='horde'){const n=10+Math.min(10,(P.lv/8)|0);M.ev={k,t:0,lim:100,left:n,n};for(let i=0;i<n;i++){let px,py,t=0;do{const a=Math.random()*6.283,r=200+Math.random()*80;px=P.x+Math.cos(a)*r;py=P.y+Math.sin(a)*r}while(blocked(px,py)&&t++<30);const e=spawnEn(ml,px,py,false,z.en[RI(0,2)]);e.hord=1;e.st='chase'}ban('MONSTER HORDE','Survive and defeat all '+n+' foes!');sfx('stBoss',.8)}
+ if(k=='horde'){const n=Math.max(4,Math.round((10+Math.min(10,(P.lv/8)|0))*(window.XB37&&window.MDEN?window.MDEN():1)));M.ev={k,t:0,lim:100,left:n,n};for(let i=0;i<n;i++){let px,py,t=0;do{const a=Math.random()*6.283,r=200+Math.random()*80;px=P.x+Math.cos(a)*r;py=P.y+Math.sin(a)*r}while(blocked(px,py)&&t++<30);const e=spawnEn(ml,px,py,false,z.en[RI(0,2)]);e.hord=1;e.st='chase'}ban('MONSTER HORDE','Survive and defeat all '+n+' foes!');sfx('stBoss',.8)}
  else{let px,py,t=0;do{const a=Math.random()*6.283,r=230;px=P.x+Math.cos(a)*r;py=P.y+Math.sin(a)*r}while(blocked(px,py)&&t++<30);const e=spawnEn(ml+4,px,py,false,z.rare);e.hp=e.mh=e.mh*6;e.el=1;e.hunt=1;e.r=e.r*1.2;e.st='chase';M.ev={k:'hunt',t:0,lim:120,tgt:e};ban('ELITE HUNT','A champion stalks the area!');sfx('stBoss',.7)}}
 function evWin(){const ml=M.ev?M.ev.ml||P.lv:P.lv;M.ev=null;P.evd=(P.evd||0)+1;const g=Math.round(P.lv*120+200);P.g+=g;tx(P.x,P.y-40,'+'+g+' gold','#ffd24a',1.4);for(let i=0;i<2;i++){const it=genItem(P.lv+RI(0,3),true,2);addItem(it);announce(it,P.x+i*14-7,P.y)}scrAdd('e',2);scrAdd('b',1);if(typeof essGain=='function')essGain(3);P.shard+=1;ban('EVENT COMPLETE','Rewards claimed!');sfx('uilegend');burst(P.x,P.y-10,40,'#ffd24a',150)}
 function huntDone(e){if(M.ev&&M.ev.k=='hunt'){const g=Math.round(P.lv*180+300);P.g+=g;for(let i=0;i<2;i++){const it=genItem(P.lv+RI(2,5),true,3);addItem(it);announce(it,e.x+i*14-7,e.y)}P.shard+=2;scrAdd('p',1);petDrop&&petDrop({boss:1,lair:0,ml:e.ml,x:e.x,y:e.y});M.ev=null;P.evd=(P.evd||0)+1;ban('CHAMPION SLAIN','Rewards claimed!');sfx('uilegend')}}
@@ -4827,7 +4827,7 @@ const _ep89=evPick;evPick=function(){const k=_ep89();if(k=='night'&&(P.lv<16||zo
 const _evs89=evStart;
 evStart=function(k){if(k!='night')return _evs89(k);if(M.ev||dun||inTown())return;const z=ZN[zone],ml=Math.max(M.en.length?M.en[0].ml:z.lv,P.lv-3);
  const ring=(r0,r1)=>{let px,py,t=0;do{const a=Math.random()*6.283,r=r0+Math.random()*(r1-r0);px=P.x+Math.cos(a)*r;py=P.y+Math.sin(a)*r}while((blocked(px,py)||(M.town&&px<M.town.x1+10))&&t++<40);return[px,py]};
- const df=dfi(),cap=Math.round(Math.min(130,80+df*10+zone*4)*(window.XB37?.42:1)),ev={k:'night',t:0,lim:150,sp:0,kills:0,acc:0,next:30,rate0:3.2+df*.5,
+ const df=dfi(),cap=Math.round(Math.min(130,80+df*10+zone*4)*(window.XB37&&window.MDEN?window.MDEN():1)),ev={k:'night',t:0,lim:150,sp:0,kills:0,acc:0,next:30,rate0:3.2+df*.5,
   txt(){const alive=M.en.filter(q=>q.evk===ev).length,t=Math.max(0,Math.ceil(this.lim-this.t));return`<b style="color:#c8a0ff">NIGHT SWARM</b> - ${alive} bats<small>Survive until dawn: ${t}s | ${this.kills} slain | no resurrection</small>`},
   tick(dt){P.sfT=999;const t=this.t,rate=this.rate0+t*.45;this.acc+=rate*dt;let alive=0;for(const q of M.en)if(q.evk===ev)alive++;
    while(this.acc>=1){this.acc-=1;if(alive>=cap)continue;const[px,py]=ring(100,200);const e=spawnEn(ml,px,py,false,0);e.hp=e.mh=e.mh*1.1*(1+t/20);e.ttl='Night Bat';e.evk=ev;e.sw=1;e.dmx=1.5+3*t/this.lim;if(Math.random()<.4)e.aff='Swift';e.st='chase';alive++}
@@ -7463,9 +7463,9 @@ dprop=function(p){
   const st=Math.floor(tm*AQ36+(p.x*.37%1));
   if(c.st!==st&&(c.st<0&&PC36.made<12||c.st>=0&&PC36.re<14)){
    if(c.st<0)PC36.made++;else PC36.re++;
-   const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);const sx0=x,cx=cam.x,cy=cam.y,t0=tm;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;tm=st/AQ36;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy;tm=t0}c.st=st}
+   const g=c.g2||(c.g2=c.getContext('2d'));g.clearRect(0,0,c.width,c.height);const sx0=x,cx=cam.x,cy=cam.y,t0=tm;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;tm=st/AQ36;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy;tm=t0}c.st=st}
   if(c.st<0){_dp36(p);return}
- }else if(c.st<0){const g=c.getContext('2d');const sx0=x,cx=cam.x,cy=cam.y;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy}c.st=0}
+ }else if(c.st<0){const g=c.g2||(c.g2=c.getContext('2d'));const sx0=x,cx=cam.x,cy=cam.y;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy}c.st=0}
  x.drawImage(c,Math.round(sx-c.ox),Math.round(sy-c.oy));PC36.hit++;
 };
 window.PC36=PC36;
@@ -7694,7 +7694,33 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  try{delete CFG.tcap;Object.defineProperty(CFG,'tcap',{get:()=>undefined,set:()=>{},configurable:true,enumerable:false})}catch(e){}
  /* tiny label text (pet names, small tags) drawn larger and heavier */
  {const _T=T;T=function(s,px,py,o){if(o&&o.sz&&o.sz<=6.5){o=Object.assign({},o);o.sz=Math.min(8.5,o.sz*1.4);o.sw=Math.max(o.sw||1.6,2.2)}return _T(s,px,py,o)}}
+ /* crowd LOD: when many enemies pile onto a standing player, draw everything past the nearest 26 as plain sprites (no shadow/aura/extras) */
+ {const _D=drawEn;let ft=-1,rk=null;drawEn=function(e){if(M.en.length>30&&!e.boss&&!e.el&&!e.gob&&!e.vb&&e.st!='wind'&&e.st!='tele'&&!(e.fl>0)){if(ft!==tm){ft=tm;const a=M.en.slice().sort((p,q)=>(p.x-P.x)**2+(p.y-P.y)**2-((q.x-P.x)**2+(q.y-P.y)**2));rk=new Set(a.slice(0,26))}
+   if(!rk.has(e)){const d=ED[e.ty],sp=ES[d.spr],sx=e.x-cam.x,sy=e.y-cam.y;if(sx<-70||sx>VW+70||sy<-40||sy>VH+80)return;let row=e.mv?1:0,n=sp.n[row];if(!n){row=0;n=sp.n[0]}const f=Math.floor(e.at*9)%n,w=sp.s,fy=e.fly?10+Math.sin(tm*5+e.x)*3:0,dy=sp.gen?-w*.906:-w*.92;if(e.face<0){x.save();x.translate(sx,sy-fy);x.scale(-1,1);x.drawImage(sp.img,f*sp.s,row*sp.s,sp.s,sp.s,-w/2,dy,w,w);x.restore()}else x.drawImage(sp.img,f*sp.s,row*sp.s,sp.s,sp.s,sx-w/2,sy-fy+dy,w,w);return}}
+  return _D(e)}}
+ /* Xbox-only monster density slider (maximum enemies out at once: zone spawns, hordes, night swarm) */
+ window.MDEN=()=>Math.max(.2,Math.min(1,CFG.mden==null?.5:CFG.mden));
+ {const _f=fillEn;fillEn=function(n){return _f(Math.max(3,Math.round(n*window.MDEN())))}}
+ {const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const s=h.indexOf('<div class="set">',k);if(s<0)return h;const v=Math.round(window.MDEN()*100);
+  return h.slice(0,s+17)+`<label>Monster density (Xbox)</label><div style="display:flex;gap:.5em;align-items:center"><input type="range" min="20" max="100" step="5" value="${v}" data-s="mden"><span class="val">${v}%</span></div><small class="dim">Maximum enemies out at once. Lower is smoother; 100% is the full PC amount.</small>`+h.slice(s+17)}}
+ /* skill-bar cells query the same three children every frame: cache them */
+ {const _q=Element.prototype.querySelector,QS={'.cdo':1,'.cdt':1,'.rk':1};Element.prototype.querySelector=function(q){if(QS[q]===1){const m=this.__qc||(this.__qc={});let n=m[q];if(n&&n.parentNode&&this.contains(n))return n;n=_q.call(this,q);m[q]=n;return n}return _q.call(this,q)}}
 }catch(e){}}
+
+/* v14.23r: compare any item tooltip/detail against the item equipped in the same slot */
+{const css=document.createElement('style');css.textContent='.cmp{margin-top:.35em;padding-top:.3em;border-top:1px solid #5a4528;font-size:.92em;line-height:1.35}.cmp b{display:block;margin-bottom:.1em}.cmp .up{color:#7cf08a}.cmp .dn{color:#ff7a7a}.cmp .eqs{color:#aaa}.cmp .vd{font-weight:bold;margin-top:.15em}';document.head.appendChild(css);
+const tot=it=>{let t=0;for(const[k,v]of it.s)t+=v*sm(it)*(ST[k]?ST[k][1]:1)/(ST[k]&&ST[k][1]>1?8:ST[k]&&k=='h'?9:1.5);return t};
+const vals=it=>{const o={};for(const[k,v]of it.s)o[k]=(o[k]||0)+v*sm(it);return o};
+const fd=(k,d)=>{const m=ST[k]?ST[k][1]:1,u=ST[k]?ST[k][0]:'',n=d*m,a=Math.abs(n),s=a.toFixed(m>1?1:0);return(n>0?'+':'-')+s+u};
+const _it=itTip;
+itTip=function(it){const base=_it(it);try{if(!P||!it||!it.s||!it.sl)return base;let eq=P.eq[it.sl];if(eq===it)return base;
+ if(it.sl=='rg'||it.sl=='r2'){const a=P.eq.rg,b=P.eq.r2;if(a===it||b===it)return base;eq=!a?null:!b?null:(tot(a)<=tot(b)?a:b);if(a&&!b)eq=null;else if(!a&&b)eq=null}
+ if(!eq)return base.replace(/<\/div>$/,'<div class="cmp"><b>vs. equipped</b><span class="up">Slot is empty - any stats are a gain</span></div></div>');
+ const A=vals(it),B=vals(eq),ks=[...new Set([...Object.keys(A),...Object.keys(B)])];let rel=0,rows=[];
+ for(const k of ks){const a=A[k]||0,b=B[k]||0,d=a-b;if(Math.abs(d*(ST[k]?ST[k][1]:1))<.05){rows.push(`<span class="eqs">= ${ST[k]?ST[k][0].replace(/^%?\s*/,''):k}</span>`);continue}const w=Math.max(Math.abs(a),Math.abs(b))||1;rel+=d/w;rows.push(`<span class="${d>0?'up':'dn'}">${d>0?'&#9650;':'&#9660;'} ${fd(k,d)}</span>`)}
+ const dl=it.il-eq.il,ta=tot(it),tb=tot(eq),pct=tb>0?Math.round((ta/tb-1)*100):0;
+ const vd=pct>=8&&rel>0?`<span class="up">Upgrade (${pct>0?'+':''}${pct}% overall)</span>`:pct<=-8&&rel<0?`<span class="dn">Downgrade (${pct}% overall)</span>`:`<span class="eqs">Sidegrade (${pct>0?'+':''}${pct}% overall)</span>`;
+ return base.replace(/<\/div>$/,`<div class="cmp"><b>vs. equipped: ${eq.n}${eq.up?' +'+eq.up:''}${dl?` <small>(ilvl ${dl>0?'+':''}${dl})</small>`:''}</b>${rows.join('<br>')}<div class="vd">${vd}</div></div></div>`)}catch(e){return base}}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
