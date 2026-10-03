@@ -221,7 +221,9 @@ setInterval(seq,50)}
 const sfxT={};
 function sfx(k,v=1,p=1,wet=.22){k=AL[k]||k;if(!AC||muted||!SB[k]||!SB[k].length)return;const now=AC.currentTime;if(sfxT[k]&&now-sfxT[k]<.035)return;sfxT[k]=now;const s=AC.createBufferSource(),g=AC.createGain(),w=AC.createGain(),ui=k.startsWith('ui');s.buffer=SB[k][RI(0,SB[k].length-1)];s.playbackRate.value=p*(ui?1:R(.94,1.06));g.gain.value=v;w.gain.value=wet;s.connect(g);g.connect(ui?uiG:sfxG);if(!ui){g.connect(w);w.connect(rev)}s.start();return s}
 function tn(f,t,d,ty,v,o={}){const os=AC.createOscillator(),g=AC.createGain();os.type=ty;os.frequency.value=f;if(o.dt)os.detune.value=o.dt;const a=o.a||.01;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+d);let n=os;if(o.fl){const b=AC.createBiquadFilter();b.type=o.ft||'lowpass';b.frequency.value=o.fl;if(o.sw)b.frequency.exponentialRampToValueAtTime(o.sw,t+d);os.connect(b);n=b}n.connect(g);g.connect(o.bus||musG);if(o.w){const w=AC.createGain();w.gain.value=o.w;g.connect(w);w.connect(rev)}os.start(t);os.stop(t+d+.05)}
-function nz(t,d,v,fr,ty='bandpass',w=0){const n=AC.sampleRate*d|0,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty;f.frequency.value=fr;g.gain.value=v;s.connect(f);f.connect(g);g.connect(musG);if(w){const q=AC.createGain();q.gain.value=w;g.connect(q);q.connect(rev)}s.start(t)}
+/* decaying-noise buffers are cached by length: building them per hit was a main-thread cost (drums, ultimates) */
+const NBCm={};function NBC(n){n=Math.max(64,n|0);let b=NBCm[n];if(!b||b.sampleRate!==AC.sampleRate){const ks=Object.keys(NBCm);if(ks.length>90)for(const k of ks)delete NBCm[k];b=AC.createBuffer(1,n,AC.sampleRate);const a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);NBCm[n]=b}return b}
+function nz(t,d,v,fr,ty='bandpass',w=0){const b=NBC(AC.sampleRate*d|0);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty;f.frequency.value=fr;g.gain.value=v;s.connect(f);f.connect(g);g.connect(musG);if(w){const q=AC.createGain();q.gain.value=w;g.connect(q);q.connect(rev)}s.start(t)}
 /* one-shot synthesized swell (ultimate charge-up): rising tone + noise */
 function swell(d=1.2,f0=110,f1=660,v=.12){if(!AC||muted)return;const t=AC.currentTime,os=AC.createOscillator(),o2=AC.createOscillator(),g=AC.createGain(),fl=AC.createBiquadFilter();os.type='sawtooth';o2.type='square';os.frequency.setValueAtTime(f0,t);os.frequency.exponentialRampToValueAtTime(f1,t+d);o2.frequency.setValueAtTime(f0*1.5,t);o2.frequency.exponentialRampToValueAtTime(f1*1.5,t+d);fl.type='lowpass';fl.frequency.setValueAtTime(300,t);fl.frequency.exponentialRampToValueAtTime(5000,t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.9);g.gain.exponentialRampToValueAtTime(.0001,t+d+.25);os.connect(fl);o2.connect(fl);fl.connect(g);g.connect(sfxG);const w=AC.createGain();w.gain.value=.5;g.connect(w);w.connect(rev);os.start(t);o2.start(t);os.stop(t+d+.3);o2.stop(t+d+.3)}
 const ZM=[{r:57,sc:[0,2,4,7,9],pr:[[0,4,7],[5,9,12],[7,11,14],[3,7,10]],bpm:94},{r:50,sc:[0,2,3,7,9],pr:[[0,3,7],[8,12,15],[5,8,12],[7,10,14]],bpm:98},{r:52,sc:[0,1,5,7,8],pr:[[0,3,7],[1,5,8],[5,8,12],[7,11,14]],bpm:104},{r:55,sc:[0,2,4,7,9],pr:[[0,4,7],[9,12,16],[5,9,12],[7,11,14]],bpm:88},{r:47,sc:[0,3,5,6,10],pr:[[0,3,7],[5,8,12],[3,7,10],[6,10,13]],bpm:86},{r:45,sc:[0,3,5,7,10],pr:[[0,3,7],[5,8,12],[3,7,10],[7,10,14]],bpm:82},{r:43,sc:[0,1,4,7,8],pr:[[0,4,7],[1,5,8],[0,3,7],[8,12,15]],bpm:112},{r:59,sc:[0,2,4,7,11],pr:[[0,4,7],[2,6,9],[4,7,11],[7,11,14]],bpm:76}];
@@ -1170,7 +1172,7 @@ function steer(tx2,ty2){if(dun||M.kind=='z'){if(tm-wpC>.12){wpC=tm;wpP=pathTo(tx
 if(Math.hypot(P.x-stk.x,P.y-stk.y)>3){stk.x=P.x;stk.y=P.y;stk.t=tm}else if(tm-stk.t>.45&&wpP){/* stuck on a corner: aim at the cell centre first */const cx2=((P.x>>4)*16+8),cy2=((P.y>>4)*16+8),d=Math.hypot(cx2-P.x,cy2-P.y);if(d>1.5)return[(cx2-P.x)/d,(cy2-P.y)/d];stk.t=tm}
 if(wpP){const d=Math.hypot(wpP.x-P.x,wpP.y-P.y);if(d>1.5)return[(wpP.x-P.x)/d,(wpP.y-P.y)/d]}}const d=Math.max(.5,Math.hypot(tx2-P.x,ty2-P.y));return[(tx2-P.x)/d,(ty2-P.y)/d]}
 let S=null,TG=null,LS='',KS=0,KT=0,txs=[],trans=null,SV=null,promptI=null,gathT=0,edge={},mkT=0,lootQ=0,uiT=0,mouseD=false,W2=null;const keys=new Set();
-const say=t=>{const d=document.createElement('div');d.textContent=t;const c=$('chat');if(!c)return;c.append(d);while(c.children.length>220)c.firstChild.remove()},
+let say=t=>{const d=document.createElement('div');d.textContent=t;const c=$('chat');if(!c)return;c.append(d);while(c.children.length>220)c.firstChild.remove()},
 ban=(t,sub)=>{const b=$('ban');b.innerHTML='<b>'+t+'</b>'+(sub?'<small>'+sub+'</small>':'');b.style.animation='none';b.offsetWidth;b.style.animation=''},
 tx=(px,py,s,c,big)=>{if(typeof s=='number'&&!CFG.dmg)return;if(txs.length>60)txs.shift();txs.push({x:px+R(-3,3),y:py,s,c,l:1,big,n:typeof s=='number'})};
 const toastT={};let toastH=0;
@@ -1326,7 +1328,7 @@ for(let i=0;i<M.en.length;i++)for(let j=i+1;j<M.en.length;j++){const a=M.en[i],b
 for(const p of EPR){p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt;if(blocked(p.x,p.y+8))p.l=0;if(Math.hypot(p.x-P.x,p.y-(P.y-8))<8){hurt(p.dm,p.x-p.vx,p.y-p.vy);p.l=0;burst(p.x,p.y,6,p.c,60)}}EPR=EPR.filter(p=>p.l>0);
 tgtI=cl(AGG*.25+(dun?.25:0)+(P.hp<mhp()*.35?.2:0)+(P.casting>0?.5:0),0,1);
 updFx(dt);tick_zones(dt);allyUpdate(dt);v5Update(dt);
-txs=txs.filter(t=>{t.l-=rdt*.9;t.y-=22*rdt;return t.l>0});
+txs=txs.filter(t=>{t.l-=rdt*(t.sl?.4:.9);t.y-=(t.sl?8:22)*rdt;return t.l>0});
 /* spawns & portals */
 if(M.kind=='z'){mkT-=dt;if(M.lair&&M.lair.t>0)M.lair.t-=dt;if(mkT<=0){mkT=3;fillEn(14)}for(const n of M.nodes)if(n.t>0){n.t-=dt;if(n.t<=0)n.hp=n.mh}
 for(const ex of M.ex){if(ex.cool>tm)continue;if(Math.abs(P.x-ex.x)<ex.w&&Math.abs(P.y-ex.y)<ex.h){const nz=zone+ex.dir;if(nz<0){toast('The gate is sealed.','seal',1800);P.x+=14;ex.cool=tm+1.2}else if(nz>=ZN.length){toast('The path ends here (for now).','end',1800);P.x-=14;ex.cool=tm+1.2}else if(P.lv<ZN[nz].lv){toast('Requires level '+ZN[nz].lv+' to enter '+ZN[nz].n,'lvl'+nz,2200);P.x-=ex.dir*14;ex.cool=tm+1.2;sfx('uierr',.6)}else{sfx('portal');ex.cool=tm+3;go(()=>{enterZone(nz,ex.dir);sfx('tele')},{zone:nz})}}}}
@@ -1419,7 +1421,7 @@ scrDraw();
 /* hi-res text overlay */
 const g=tx2;g.setTransform(TSC,0,0,TSC,sh[0]*TSC,sh[1]*TSC);g.textBaseline='alphabetic';
 for(let li=0,ln=Math.min(LBL.length,(window.PERFX36&&window.PERFX36())?22:36);li<ln;li++){const l=LBL[li];const o=Object.assign({},l.o);T(l.s,Math.round(l.px-cam.x),Math.round(l.py-cam.y),o)}
-for(const t of txs){const a=Math.min(1,t.l*2.2),pop=t.big?1+Math.max(0,t.l-.8)*2.5:1;g.globalAlpha=a;g.save();g.translate(Math.round(t.x-cam.x),Math.round(t.y-cam.y));g.scale(pop,pop);T(String(t.s),0,0,{sz:t.big?10:t.n?7.5:7,c:t.c,sc:'#000',sw:2.2,f:FD});g.restore()}g.globalAlpha=1;
+for(const t of txs){const a=Math.min(1,t.l*2.2),pop=t.big?1+Math.max(0,t.l-.8)*2.5:1;g.globalAlpha=a;g.save();g.translate(Math.round(t.x-cam.x),Math.round(t.y-cam.y));g.scale(pop,pop);T(String(t.s),0,0,{sz:(t.big?10:t.n?7.5:7)*(window.XB37||1),c:t.c,sc:'#000',sw:2.2,f:FD});g.restore()}g.globalAlpha=1;
 scrText();
 
 if(trans)loadDraw()}
@@ -1526,7 +1528,7 @@ if(f.k=='comet'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}
 if(f.k=='arrowf'&&!f.fired&&f.t>=f.d){f.fired=1;burst(f.x,f.y,5,f.c,50);if(f.cb)f.cb()}
 if(f.k=='sword'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}}
 fxs=fxs.filter(f=>f.k=='pj'?f.l>0:f.t<f.d);
-pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});
+pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});if(pts.length>260&&window.PERFX36&&window.PERFX36())pts=pts.slice(pts.length-260);
 DEC=DEC.filter(d=>(d.t+=dt)<d.d);
 for(const z of ZNS){z.t+=dt;z.acc+=dt}
 }
@@ -2000,7 +2002,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23j</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23k</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -4652,7 +4654,7 @@ document.addEventListener('click',e=>{const pf=$('petf');if(!pf)return;if(e.targ
 const svXr=()=>(S&&S.agility)?S.agility.pr:0;
 const _rl87=roll;roll=function(){if(!P||P.roll>0||P.casting>0)return;if(P.rcd>0){if((P.rxn||0)>0&&(P.rxt||0)>0){P.rxn--;P.rcd=0;P.rxt=1.4;tx(P.x,P.y-34,'EXTRA ROLL','#9ad8ff')}else return}else{P.rxn=svXr();P.rxt=1.4}_rl87()};
 /* ---- audio: campfire crackle and carpenter sawing ---- */
-function svNz(t,d,v,fr,ty){const n=AC.sampleRate*d|0,b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty;f.frequency.value=fr;g.gain.value=v;s.connect(f);f.connect(g);g.connect(sfxG);s.start(t)}
+function svNz(t,d,v,fr,ty){const b=NBC(AC.sampleRate*d|0);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty;f.frequency.value=fr;g.gain.value=v;s.connect(f);f.connect(g);g.connect(sfxG);s.start(t)}
 function svSawStroke(v,dir){const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();o.type='sawtooth';o.frequency.setValueAtTime(dir?150:195,t);o.frequency.linearRampToValueAtTime(dir?190:140,t+.28);f.type='bandpass';f.frequency.value=1200;f.Q.value=1.3;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06*v,t+.03);g.gain.linearRampToValueAtTime(.05*v,t+.22);g.gain.linearRampToValueAtTime(0,t+.3);o.connect(f);f.connect(g);g.connect(sfxG);o.start(t);o.stop(t+.32);svNz(t,.3,.06*v,2900,'bandpass')}
 let svCk=0,svBed=0,svSw=0,svSwN=0;
 function svAmb(dt){if(!AC||muted||AC.state!='running'||!P||!M||!M.pr||!started)return;let fd=1e9,cd=1e9;for(const p of M.pr){if((p.n=='fire81'&&tm<p.end)||p.n=='hearth81'){const d=Math.hypot(p.x-P.x,p.y-P.y);if(d<fd)fd=d}else if(p.n=='carp81'){const d=Math.hypot(p.x-P.x,p.y-P.y);if(d<cd)cd=d}}
@@ -5598,12 +5600,13 @@ function deOverlap13(){if(!M||M.kind!='z'||M.sea||dun||!M.pr)return;
  for(const p of M.pr.slice()){if(!(p.n in NATR13)||inKeep(p))continue;if(M.ints.some(i=>i.x>-500&&Math.hypot(i.x-p.x,i.y-p.y)<26)||(M.ex||[]).some(e=>Math.abs(e.x-p.x)<36&&Math.abs(e.y-p.y)<44))kill_(p)}}
 {const _mz=mkZone;mkZone=function(z){_mz(z);try{deOverlap13()}catch(e){console.error('deOverlap13',e)}}}
 /* ---------- per-class ultimate voices: synthesized, punchy, riser -> hit -> sparkle (no screams) ---------- */
+const NBWm={};function NBW36(n){let b=NBWm[n];if(!b||b.sampleRate!==AC.sampleRate){const ks=Object.keys(NBWm);if(ks.length>40)for(const k of ks)delete NBWm[k];b=AC.createBuffer(1,n,AC.sampleRate);const a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=Math.random()*2-1;NBWm[n]=b}return b}
 function ultVoice13(cls){if(CFG.vox===0||!AC||muted)return;try{
  const t=AC.currentTime+.012,B=AC.createGain(),RV=rev,hz=n=>440*Math.pow(2,(n-69)/12),h=t+.34;
 B.gain.value=.5;B.connect(sfxG||AC.destination);
  const env=(g,t0,a,d,v)=>{g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+a);g.gain.exponentialRampToValueAtTime(.0001,t0+d)};
  const osc=(ty,f0,f1,t0,d,v,o={})=>{const os=AC.createOscillator(),g=AC.createGain();os.type=ty;os.frequency.setValueAtTime(f0,t0);if(f1&&f1!=f0)os.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t0+d);if(o.dt)os.detune.value=o.dt;let n=os;if(o.fl){const b=AC.createBiquadFilter();b.type=o.ft||'lowpass';b.frequency.setValueAtTime(o.fl,t0);if(o.sw)b.frequency.exponentialRampToValueAtTime(Math.max(30,o.sw),t0+d);b.Q.value=o.q||1;os.connect(b);n=b}env(g,t0,o.a||.004,d,v);n.connect(g);g.connect(B);if(o.w){const w=AC.createGain();w.gain.value=o.w;g.connect(w);w.connect(RV)}os.start(t0);os.stop(t0+d+.06)};
- const noi=(t0,d,v,fr,ty,o={})=>{const n=Math.max(64,AC.sampleRate*d|0),b=AC.createBuffer(1,n,AC.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=(Math.random()*2-1);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty||'bandpass';f.frequency.setValueAtTime(fr,t0);if(o.sw)f.frequency.exponentialRampToValueAtTime(Math.max(30,o.sw),t0+d);f.Q.value=o.q||.8;env(g,t0,o.a||.003,d,v);s.connect(f);f.connect(g);g.connect(B);if(o.w){const w=AC.createGain();w.gain.value=o.w;g.connect(w);w.connect(RV)}s.start(t0);s.stop(t0+d+.05)};
+ const noi=(t0,d,v,fr,ty,o={})=>{const b=NBW36(Math.max(64,AC.sampleRate*d|0));const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=b;f.type=ty||'bandpass';f.frequency.setValueAtTime(fr,t0);if(o.sw)f.frequency.exponentialRampToValueAtTime(Math.max(30,o.sw),t0+d);f.Q.value=o.q||.8;env(g,t0,o.a||.003,d,v);s.connect(f);f.connect(g);g.connect(B);if(o.w){const w=AC.createGain();w.gain.value=o.w;g.connect(w);w.connect(RV)}s.start(t0);s.stop(t0+d+.05)};
  const kick=(t0,v=.7,f0=175,f1=36,d=.38)=>{osc('sine',f0,f1,t0,d,v);osc('triangle',f0*1.6,f1*2,t0,d*.35,v*.35);noi(t0,.045,v*.45,2600,'highpass')};
  const arp=(ty,notes,t0,step,d,v,o)=>notes.forEach((f,i)=>osc(ty,f,0,t0+i*step,d,v*(1+i*.07),o));
  const riser=(v=.2,f0=300,f1=5200)=>{noi(t,.33,v,f0,'bandpass',{sw:f1,a:.28,q:1.4});osc('sine',180,980,t,.33,v*.8,{a:.3})};
@@ -7252,7 +7255,7 @@ if(CFG.perf==null){CFG.perf=XBOX29?1:0;if(CFG.perf)PERFON29()}
 {let last=CFG.perf|0;
  const _a=applyCFG;applyCFG=function(){_a.apply(this,arguments);try{const p=CFG.perf|0;if(p!==last){last=p;if(p)PERFON29();else PERFOFF29();try{saveCFG()}catch(e){}try{fit()}catch(e){}}document.documentElement.classList.toggle('perf29',!!p);const f=Math.max(.6,Math.min(1,CFG.fov==null?1:CFG.fov));const el=document.documentElement.style;el.setProperty('--fovz',String(1/f));document.body&&document.body.classList.toggle('nofov',f>=.999)}catch(e){}};
  const st=document.createElement('style');st.textContent='body.nofov #cv,body.nofov #tcv{transform:none!important}.perf29 *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.perf29 #cv,.perf29 #tcv{image-rendering:pixelated}#scrt27{will-change:transform,opacity;contain:layout paint}.perf29 #scrt27 b,.perf29 #scrt27 i{text-shadow:0 2px 0 #000!important}';document.head.appendChild(st);
- const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min(CFG.tcap||9999,(typeof MOB28!='undefined'&&MOB28)?1024:(typeof XBOX29!="undefined"&&XBOX29)?960:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
+ const _f=fit;fit=function(){_f();try{if(CFG.perf){const d=1,tw=Math.min(CFG.tcap||9999,(typeof MOB28!='undefined'&&MOB28)?1024:(typeof XBOX29!="undefined"&&XBOX29)?1440:1280,Math.round(parseFloat(G.style.width)*d));if(tcv.width!=tw){tcv.width=tw;tcv.height=Math.round(tw*VH/VW)}TSC=tcv.width/VW}}catch(e){}};
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;const add=seg('perf','Performance mode',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)};
  try{applyCFG()}catch(e){}}
 
@@ -7371,7 +7374,7 @@ try{if(window.PLAT31=='xbox'&&CFG.gpzm!==1){CFG.gpzm=1;if(CFG.gpz==null||CFG.gpz
   const add=seg('wide','Screen fill',[[1,'Fill the screen'],[0,'Keep 16:9 (bars)']])+seg('arf','Auto refresh to 60 FPS',[[1,'On'],[0,'Off']]);return h.slice(0,s+17)+add+h.slice(s+17)};
  /* console auto-refresh: when frames fall under 50 FPS, switch Auto performance and Performance mode off and on again */
  let fr=0,t0=performance.now(),low=0,cool=0,refreshes=0;
- let lastRf=0,streak=0;const refresh=()=>{try{refreshes++;const nw=performance.now();streak=nw-lastRf<100000?streak+1:1;lastRf=nw;if(streak>=3&&!CFG.tcap&&isCon()){CFG.tcap=720;msg&&0}if(streak>=6&&CFG.tcap===720&&isCon())CFG.tcap=560;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
+ let lastRf=0,streak=0;const refresh=()=>{try{refreshes++;const nw=performance.now();streak=nw-lastRf<100000?streak+1:1;lastRf=nw;if(streak>=3&&!CFG.tcap&&isCon()){CFG.tcap=1080}if(streak>=6&&CFG.tcap===1080&&isCon())CFG.tcap=720;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
    setTimeout(()=>{try{CFG.perf=1;CFG.aq=1;applyCFG();saveCFG();window.RFR29=refreshes}catch(e){}},60)}catch(e){}};
  window.refresh29=refresh;
  setInterval(()=>{try{if(CFG.arf&&isCon()&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&performance.now()-(window.__lastRf36||0)>150000){window.__lastRf36=performance.now();canvasRefresh36()}}catch(e){}},20000);
@@ -7480,14 +7483,12 @@ window.TC36=TC36;
 
 /* force the browser to throw away and re-create the GPU backing stores + sprite caches (what toggling performance mode used to do by accident) */
 window.canvasRefresh36=function(){try{for(const c of[tcv,cv]){const w=c.width;c.width=0;c.width=w}tx2._d=1;try{SHD22.clear()}catch(e){}TC36.m.clear();TC36.seen.clear();PC36.inst=new WeakMap();for(const k in GC)delete GC[k];if(typeof fit=='function')fit()}catch(e){}};
-window.PERFX36=()=>{try{return CFG.perf&&(XBOX29||MOB28)}catch(e){return false}};
+window.PERFX36=()=>{try{return CFG.perf&&XBOX29}catch(e){return false}};
 
 /* frame-cost collector (cheap: two performance.now() per frame) feeding the admin perf overlay */
 {const D=window.PD36={u:0,d:0,l:0,su:0,sd:0,n:0};const _u=update,_d=draw;
  update=function(a){const t=performance.now();_u.apply(this,arguments);const e=performance.now()-t;D.su+=e;D.u=D.su/Math.max(1,D.n+1)};
  draw=function(a){const t=performance.now();_d.apply(this,arguments);const e=performance.now()-t;D.sd+=e;D.n++;D.d=D.sd/D.n;D.u=D.su/D.n;if(e>12)D.l++}}
-/* hard caps on decorative particles so ultimates/swarms cannot snowball the frame time */
-{const _pp=pts.push;pts.push=function(){const cap=(window.PERFX36&&window.PERFX36())?240:800;if(pts.length>=cap)return pts.length;return _pp.apply(this,arguments)}}
 
 /* sfx voice limiter in performance mode: every sound spawns 3 audio nodes + a reverb send, bursts of them stall the browser on console */
 {const _s=sfx;let win=[];sfx=function(k,v,p,wet){if(window.PERFX36&&window.PERFX36()&&AC){const t=AC.currentTime;if(win.length&&t-win[0]>.12)win=win.filter(q=>t-q<=.12);const ui=typeof k=='string'&&(k.startsWith('ui')||AL[k]);if(!ui){if(win.length>=5)return;if(sfxT[k]&&t-sfxT[k]<.07)return;win.push(t)}}return _s.apply(this,arguments)}}
@@ -7527,6 +7528,37 @@ nvField=function(tx,ty){nvBuild();const w=NV.w,h=NV.h,ok=NV.ok,pen=NV.pen;let[cx
   if(d>D[k])continue;if(k===pk&&lim===1e9)lim=d+70;if(d>lim)break;
   const x=k%w,y=(k/w)|0;for(let q=0;q<8;q++){const dx=DX[q],dy=DY[q],nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const n=ny*w+nx;if(!ok[n])continue;if(dx&&dy&&(!ok[y*w+nx]||!ok[ny*w+x]))continue;const nd=d+DC[q]+pen[n]*.35;if(nd<D[n]){D[n]=nd;push(nd,n)}}}
  return{D,cx,cy}};
+
+/* ===== v14.23k: Xbox-only readability: slower popups, queued toasts/banners ===== */
+{
+ const X=()=>{try{return XBOX29}catch(e){return false}};
+ /* floating text (items, status, loot goblin...) lingers ~2.4s on console and never stacks on top of itself */
+ const _tx=tx;tx=function(px,py,s,c,big){const n=txs.length;_tx.apply(this,arguments);if(!X()||typeof s=='number'||txs.length<=n)return;const t=txs[txs.length-1];if(!t||t.s!==s)return;t.sl=1;t.l=1.05;let k=0;for(const o of txs){if(o!==t&&o.sl&&Math.abs(o.x-t.x)<70&&Math.abs(o.y-t.y)<(12*(k+1)))k++}t.y-=k*11};
+ /* toasts: one at a time, each stays long enough to read, extras wait their turn */
+ const _t=toast,Q=[];let busy=0;
+ const next=()=>{busy=0;const q=Q.shift();if(q)show(q)};
+ const show=q=>{busy=1;_t(q[0],q[1]+'#'+performance.now(),q[2]);setTimeout(next,q[2]+280)};
+ toast=function(msg,key,ms){if(!X()||key==='adm'||typeof msg!=='string')return _t.apply(this,arguments);ms=Math.max(ms||2200,2800+Math.min(2200,msg.length*38));
+  if(!busy){const k=key||msg,now=performance.now();if(toast._k&&toast._k[k]&&now-toast._k[k]<ms+1500)return;(toast._k||(toast._k={}))[k]=now;show([msg,k,ms]);return}
+  if(Q.some(q=>q[0]===msg))return;if(Q.length>=5)Q.shift();Q.push([msg,key||msg,ms])};
+ /* banners (zone name, level up, achievements): longer and queued */
+ const _b=ban,BQ=[];let bb=0;
+ const bnext=()=>{bb=0;const q=BQ.shift();if(q)bshow(q)};
+ const bshow=q=>{bb=1;_b(q[0],q[1]);try{$('ban').style.animationDuration='4.6s'}catch(e){}setTimeout(bnext,4700)};
+ ban=function(t,sub){if(!X())return _b.apply(this,arguments);if(!bb){bshow([t,sub]);return}if(BQ.some(q=>q[0]===t))return;if(BQ.length>=3)BQ.shift();BQ.push([t,sub])};
+}
+/* console layout: keep the centre popups clear of the minimap column and each other */
+try{if(XBOX29){document.documentElement.classList.add('xb37');window.XB37=1.22;const s=document.createElement('style');s.textContent='.xb37 #toast{white-space:normal;text-align:center;width:max-content;max-width:54vw;overflow:visible;top:15.5%;line-height:1.25}.xb37 #ban{top:38%}.xb37 #prompt{max-width:50vw;white-space:normal;text-align:center}';document.head.appendChild(s)}}catch(e){}
+/* console: the browser's text-to-speech stalls the page on every ultimate (auto-battle fires them constantly); the synthesised battle shout still plays */
+try{if(XBOX29&&window.speechSynthesis){speechSynthesis.speak=function(){};speechSynthesis.cancel=function(){}}}catch(e){}
+/* never build audio nodes while the context is suspended (controller-only play leaves it suspended; nodes then pile up until the first click) */
+{const _s=sfx;sfx=function(){if(AC&&AC.state!=='running')return;return _s.apply(this,arguments)};const _tn=tn;tn=function(){if(AC&&AC.state!=='running')return;return _tn.apply(this,arguments)}}
+/* console: push the latest profile onto existing saves once, and force a graphics refresh on every page load (at the title screen and again a few seconds into play) */
+try{if(XBOX29){
+ if(!CFG.xbm37){CFG.xbm37=1;delete CFG.tcap;CFG.perf=1;if(CFG.arf==null||CFG.arf===0)CFG.arf=1;if(CFG.pcache===0)delete CFG.pcache;try{saveCFG();applyCFG()}catch(e){}}
+ setTimeout(()=>{try{canvasRefresh36()}catch(e){}},1500);
+ let d=0;const iv=setInterval(()=>{try{if(!started||d)return;d=1;clearInterval(iv);setTimeout(()=>{try{window.refresh29&&refresh29()}catch(e){}},3500)}catch(e){}},500);
+}}catch(e){}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
