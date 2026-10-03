@@ -2021,7 +2021,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23ag</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23ah</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -6878,7 +6878,7 @@ setInterval(()=>{try{const pm=typeof padMode16=='function'&&padMode16(),OK='CLMU
 <fieldset><legend>Teleport &amp; recovery</legend><button data-z27="town">Go to this zone's town</button><button data-z27="safe">Clear all enemies &amp; heal</button><button data-z27="buffs">Clear all buffs</button><button data-z27="tut">Reset tutorial steps</button></fieldset>
 <fieldset><legend>Save data</legend><div class="hint27">Copy your current hero as text for backups or bug reports.</div><button data-z27="exp">Copy save to clipboard</button><button data-z27="sv">Save now</button></fieldset>
 <fieldset><legend>Interface testing</legend><button data-z27="pad">Toggle controller icons</button><button data-z27="osk">Open / close test keyboard</button></fieldset>`;
-const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live frame time, enemy count and effect counts in the corner of the screen.</div><button data-z27="perf">Toggle performance overlay</button><button data-z27="lowfx">Cycle particle quality</button></fieldset><fieldset><legend>Console speed &amp; keep-awake (Xbox)</legend><div class="hint27">CPU speed probe, load shedding and keep-awake status are printed under the performance overlay. Burn test simulates a throttled console (adds about 12 ms of busy work per frame).</div><button data-z27="xburn">Toggle burn test</button><button data-z27="xshed">Force load shedding on/off</button><button data-z27="xlog">Clear speed log</button></fieldset>
+const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live frame time, enemy count and effect counts in the corner of the screen.</div><button data-z27="perf">Toggle performance overlay</button><button data-z27="lowfx">Cycle particle quality</button></fieldset><fieldset><legend>Console speed &amp; keep-awake (Xbox)</legend><div class="hint27">CPU speed probe, load shedding and keep-awake status are printed under the performance overlay. Burn test simulates a throttled console (adds about 12 ms of busy work per frame).</div><button data-z27="xburn">Toggle burn test</button><button data-z27="xshed">Force load shedding on/off</button><button data-z27="xlog">Clear speed log</button></fieldset><fieldset><legend>Render bisect (Xbox)</legend><div class="hint27">Each button removes one rendering system while you stand in a swarm. Watch FPS and the "other" time in the overlay. Press again to put it back. Automatic shedding pauses while any is removed.</div><button data-z27="xb_add">1 Additive blending</button><button data-z27="xb_fx">2 All spell effects</button><button data-z27="xb_part">3 Particle streams</button><button data-z27="xb_txt">4 Text layer</button><button data-z27="xb_glow">5 Glow sprites</button><button data-z27="xb_off">Put everything back</button></fieldset>
 <fieldset><legend>Stress tests</legend><div class="hint27">Spawns enemies around you in the current wild zone.</div><button data-z27="sp25">+25 enemies</button><button data-z27="sp100">+100 enemies</button><button data-z27="sp250">+250 enemies</button><button data-z27="spclr">Remove all enemies</button></fieldset>
 <fieldset><legend>Events</legend><button data-z27="evnow">World event in 5 seconds</button><button data-z27="gob">Spawn treasure goblin</button></fieldset>
 <fieldset><legend>Combat testing</legend><button data-z27="ohk">Toggle one-hit kills</button><button data-z27="nolt">Clear effects &amp; particles</button></fieldset>
@@ -6913,6 +6913,8 @@ const DBG=()=>`<fieldset><legend>Performance</legend><div class="hint27">Live fr
    case'perf':{let o=document.getElementById('perf27');if(o){o.remove();clearInterval(window.__perf27);break}o=document.createElement('div');o.id='perf27';o.style.cssText='position:fixed;left:6px;top:6px;z-index:9998;background:#000c;color:#9fffb0;font:11px monospace;padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';document.body.appendChild(o);let n=0,t0=performance.now(),mx=0,l=t0;const f=()=>{if(!document.getElementById('perf27'))return;const t=performance.now();mx=Math.max(mx,t-l);l=t;n++;requestAnimationFrame(f)};requestAnimationFrame(f);window.__perf27=setInterval(()=>{const t=performance.now(),fps=n/((t-t0)/1000);const D=window.PD36||{};o.textContent='FPS '+fps.toFixed(0)+'  worst frame '+mx.toFixed(0)+' ms\nupdate '+(D.u||0).toFixed(1)+' ms  draw '+(D.d||0).toFixed(1)+' ms  long '+(D.l||0)+'\nenemies '+(M&&M.en?M.en.length:0)+'  fx '+fxs.length+'  particles '+pts.length+'\n'+innerWidth+'x'+innerHeight+' dpr '+devicePixelRatio+' tcv '+tcv.width+' hz '+(window.HZ29||'?')+(performance.memory?'  heap '+Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'')+(D.sp&&D.sp.length?'\n'+D.sp.join('\n'):'')+'\nplat '+(window.PLAT31||'?')+' perf '+CFG.perf+' refreshes '+(window.RFR29||0)+(window.XKA?'\n'+XKA.line():'');if(window.PD36){D.l=0;D.su=0;D.sd=0;D.n=0}n=0;t0=t;mx=0},500);break}
    case'xburn':{if(!window.XKA){msg('Xbox profile only');break}XKA.burn=!XKA.burn;msg('Burn test '+(XKA.burn?'ON':'OFF'));break}
    case'xshed':{if(!window.XKA){msg('Xbox profile only');break}XKA.force=XKA.force===1?0:1;msg('Forced shedding '+(XKA.force?'ON':'OFF'));break}
+   case'xb_add':case'xb_fx':case'xb_part':case'xb_txt':case'xb_glow':{if(!window.XBIS){msg('Xbox profile only');break}msg(XBIS.tog(a.slice(3)));break}
+   case'xb_off':{if(!window.XBIS){msg('Xbox profile only');break}XBIS.reset();msg('Everything back on');break}
    case'xlog':{if(!window.XKA){msg('Xbox profile only');break}XKA.log.length=0;msg('Speed log cleared');break}
    case'lowfx':CFG.pq=((CFG.pq==null?2:CFG.pq)+1)%3;saveCFG();applyCFG();msg('Particle quality: '+['Low','Medium','High'][CFG.pq]);break;
    case'sp25':case'sp100':case'sp250':{if(dun||inTown()||M.sea){msg('Go into the wild first');break}const n=+a.slice(2),ml=Math.max(M.en.length?M.en[0].ml:ZN[zone].lv,1);for(let i=0;i<n;i++){let px,py,t=0;do{const an=Math.random()*6.283,r=120+Math.random()*180;px=P.x+Math.cos(an)*r;py=P.y+Math.sin(an)*r}while(blocked(px,py)&&t++<20);spawnEn(ml,px,py,false)}msg('Spawned '+n+' (total '+M.en.length+')');break}
@@ -7745,7 +7747,7 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
   const _T=T;T=function(){if(window.XTSK)return;return _T.apply(this,arguments)};
   const _dr=draw;let lt=0,lw=0,pd=performance.now();
   draw=function(a){const now=performance.now(),df=Math.min(now-pd,33);pd=now;
-   if(CFG.perf&&started&&M&&P&&tcv.width===lw&&now-lt<(window.XSHED?50:33.3)-df*.5)window.XTSK=true;else{lt=now;lw=tcv.width}
+   if(window.XBIS_T||(CFG.perf&&started&&M&&P&&tcv.width===lw&&now-lt<(window.XSHED?50:33.3)-df*.5))window.XTSK=true;else{lt=now;lw=tcv.width}
    try{return _dr.apply(this,arguments)}finally{window.XTSK=false}}}
  /* Xbox profile: Y-sorted draw list with zero per-frame allocation (no closures/objects/arrays): parallel preallocated arrays, one native numeric sort of packed keys, switch dispatch */
  {const N=1023,K=new Float64Array(N+1),R=new Array(N+1).fill(null),T=new Uint8Array(N+1);let n=0;
@@ -7804,8 +7806,11 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  const XKA=window.XKA={log:[],burn:false,force:0,speed:1,ref:0,cur:0,shed:0,wl:'off',vid:'off',low:0,n:0,t0:performance.now()};
  /* 1. CPU speed probe: a fixed block of arithmetic (about 1.5 ms on a fast PC, longer on the console, so timer resolution does not matter) timed twice a second; the current time is the best of the last 4 runs (a 2 second window that ignores one-off garbage-collection hits). speed = fastest time ever seen / current time, so 100% is the console at full clock and 33% means it runs 3x slower. The admin 'burn test' repeats the block 3x to simulate a throttled console. */
  const run=()=>{const t=performance.now(),r=XKA.burn?3:1;let s=0;for(let q=0;q<r;q++)for(let i=1;i<400001;i++)s+=Math.sqrt(i)*1.0001;XKA.sink=s;return performance.now()-t};
- const R4=[];let lowN=0,highN=0,sv=null;
- const setShed=v=>{if(v===XKA.shed)return;XKA.shed=v;window.XSHED=v;const P6=window.XPC36;if(P6){if(v){sv={aq:P6.aq,re:P6.re};P6.aq=3;P6.re=4}else if(sv){P6.aq=sv.aq;P6.re=sv.re;sv=null}}XKA.log.push('shed '+(v?'ON':'off')+' @'+((performance.now()-XKA.t0)/1000).toFixed(0)+'s');if(XKA.log.length>4)XKA.log.shift()};
+ const R4=[];let lowN=0,highN=0,frN=0,sv=null;
+ /* 3b. frame-time monitor: average of the last 120 real frame intervals (about 2-4 s). Shedding also starts when this stays over 28 ms (under about 36 fps) */
+ const FR=[];let fsum=0,ft0=0;XKA.fa=0;
+ const fmon=t=>{requestAnimationFrame(fmon);if(document.hidden||!started){ft0=0;return}if(ft0){const d=t-ft0;if(d<250){FR.push(d);fsum+=d;if(FR.length>120)fsum-=FR.shift()}}ft0=t};requestAnimationFrame(fmon);
+ const setShed=(v,w)=>{if(v===XKA.shed)return;XKA.shed=v;XKA.why=v?(w||'forced'):'';window.XSHED=v;const P6=window.XPC36;if(P6){if(v){sv={aq:P6.aq,re:P6.re};P6.aq=3;P6.re=4}else if(sv){P6.aq=sv.aq;P6.re=sv.re;sv=null}}XKA.log.push('shed '+(v?'ON ('+XKA.why+')':'off')+' @'+((performance.now()-XKA.t0)/1000).toFixed(0)+'s');if(XKA.log.length>4)XKA.log.shift()};
  const probe=()=>{try{if(document.hidden)return;R4.push(run());if(R4.length>4)R4.shift();const b=Math.min(...R4);
   XKA.cur=b;XKA.n++;if(!XKA.ref||b<XKA.ref)XKA.ref=b;
   const m=Math.min(1,XKA.ref/b);XKA.speed=m;
@@ -7814,13 +7819,16 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
   else if(m>=.8&&XKA.low){XKA.log.push('back '+Math.round(m*100)+'% @'+now.toFixed(0)+'s ('+(now-XKA.low).toFixed(0)+'s slow)');XKA.low=0}
   if(XKA.log.length>4)XKA.log.shift();
   /* 3. load shedding with hysteresis: under 50% for 4 probes in a row (2 s) -> shed; over 80% for 10 in a row (5 s) -> restore. Nothing happens in the first 6 s while the reference settles. */
-  if(XKA.force===1)setShed(1);
+  XKA.fa=FR.length>=60?fsum/FR.length:0;
+  if(window.XBIS_ANY){setShed(0);lowN=highN=frN=0}
+  else if(XKA.force===1)setShed(1);
   else if(CFG.xshed===0)setShed(0);
-  else{if(m<.5&&XKA.n>=12)lowN++;else lowN=0;if(m>.8)highN++;else highN=0;if(!XKA.shed&&lowN>=4)setShed(1);else if(XKA.shed&&highN>=10)setShed(0)}
+  else{if(m<.5&&XKA.n>=12)lowN++;else lowN=0;if(XKA.fa>28&&XKA.n>=12)frN++;else frN=0;if(m>.8&&(!XKA.fa||XKA.fa<20))highN++;else highN=0;
+   if(!XKA.shed&&(lowN>=4||frN>=4))setShed(1,lowN>=4?'cpu':'frames');else if(XKA.shed&&highN>=10)setShed(0)}
  }catch(e){}};
  setInterval(probe,500);
  /* what shedding does (everything is reversible and never touches saved settings): particle cap 130->45 and effect cap 100->50 (35_fx.js), draw-time particle cap 400->60 and text layer 30Hz->20Hz (89_zz39.js), animated props 6Hz->3Hz with at most 4 re-renders per frame (above), and decorative glow sprites are skipped (below) */
- {const _gl=glow;glow=function(px,py,r,c,a,t){if(window.XSHED&&(t===undefined||t===x))return;return _gl.apply(this,arguments)}}
+ {const _gl=glow;glow=function(px,py,r,c,a,t){if((window.XSHED||window.XBIS_G)&&(t===undefined||t===x))return;return _gl.apply(this,arguments)}}
  {const _d=draw;draw=function(){if(XKA.burn){const e=performance.now()+12;while(performance.now()<e);}return _d.apply(this,arguments)}}
  /* 2a. Screen Wake Lock */
  let wl=null;
@@ -7842,9 +7850,27 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  {const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const row=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(row<0)return h;const k=h.indexOf('<div class="set">',row);if(k<0)return h;
   const add=seg('xwl','Wake Lock',[[1,'On'],[0,'Off']])+seg('xvid','Keep-awake video',[[1,'On'],[0,'Off']])+seg('xshed','Load shedding',[[1,'On'],[0,'Off']]);return h.slice(0,k+17)+add+h.slice(k+17)}}
  /* admin / overlay text */
- XKA.line=()=>{const s=XKA.speed;return 'cpu '+Math.round(s*100)+'% (now '+XKA.cur.toFixed(2)+'ms ref '+XKA.ref.toFixed(2)+'ms)'+(XKA.low?' SLOW '+(((performance.now()-XKA.t0)/1000)-XKA.low).toFixed(0)+'s':'')+' | shed '+(XKA.shed?'ON':'off')+(XKA.force?' (forced)':'')+(XKA.burn?' | BURN TEST':'')+'\nkeep-awake: heartbeat '+(window.XHB?'on':'OFF')+' | wakelock '+XKA.wl+' | video '+XKA.vid+(XKA.log.length?'\n'+XKA.log.join(' | '):'')};
+ XKA.line=()=>{const s=XKA.speed;return 'cpu '+Math.round(s*100)+'% (now '+XKA.cur.toFixed(2)+'ms ref '+XKA.ref.toFixed(2)+'ms)'+' avg frame '+XKA.fa.toFixed(1)+'ms'+(XKA.low?' SLOW '+(((performance.now()-XKA.t0)/1000)-XKA.low).toFixed(0)+'s':'')+' | shed '+(XKA.shed?'ON':'off')+(XKA.force?' (forced)':'')+(window.XBIS_ANY?' (paused: bisect)':'')+(XKA.burn?' | BURN TEST':'')+'\nkeep-awake: heartbeat '+(window.XHB?'on':'OFF')+' | wakelock '+XKA.wl+' | video '+XKA.vid+(XKA.log.length?'\n'+XKA.log.join(' | '):'')};
  sync();
 }catch(e){console.error('zz41',e)}}
+
+/* ===== v14.23ah (Xbox only): render bisect. Five live switches that remove one rendering system at a time, so the console shows which one causes the frame dips. Nothing is saved; all switches reset on reload. ===== */
+if(typeof XBOX29!=='undefined'&&XBOX29){try{
+ const B=window.XBIS={add:0,fx:0,part:0,txt:0,glow:0};
+ const NM={add:'blend',fx:'fx',part:'part',txt:'text',glow:'glow'};
+ const upd=()=>{window.XBIS_ANY=(B.add||B.fx||B.part||B.txt||B.glow)?1:0;window.XBIS_T=B.txt;window.XBIS_G=B.glow};
+ /* 1. additive blending: an own accessor on the main canvas context turns 'lighter' into normal alpha blending; removing the accessor restores the real property, so there is no cost while the switch is off */
+ const CP=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,'globalCompositeOperation');
+ const setAdd=v=>{if(v)Object.defineProperty(x,'globalCompositeOperation',{configurable:true,get(){return CP.get.call(this)},set(o){CP.set.call(this,o==='lighter'?'source-over':o)}});else delete x.globalCompositeOperation};
+ /* 2+3. spell effects and particle streams: draw the effect list / particle list as empty for one call (the real lists are put back straight after) */
+ {const _df=drawFx;drawFx=function(u){if(!B.fx&&!B.part)return _df.apply(this,arguments);const f0=fxs,p0=pts;if(B.fx)fxs=[];if(B.part)pts=[];try{return _df.apply(this,arguments)}finally{fxs=f0;pts=p0}}}
+ /* 4. text layer: hidden and not drawn (the 30Hz gate in 89_zz39.js reads XBIS_T); 5. glow sprites: skipped in the glow wrapper in 89_zz41.js */
+ B.tog=k=>{B[k]=B[k]?0:1;if(k==='add')setAdd(B.add);if(k==='txt')tcv.style.visibility=B.txt?'hidden':'';upd();return NM[k]+' '+(B[k]?'OFF (removed)':'on')};
+ B.reset=()=>{for(const k of Object.keys(NM))B[k]=0;setAdd(0);tcv.style.visibility='';upd()};
+ /* readout: avg frame, busy (update+draw as measured by the profiler) and the remainder, which is time spent outside the game's own code */
+ if(window.XKA){const _l=XKA.line;XKA.line=function(){const D=window.PD36||{},fa=XKA.fa||0,busy=(D.u||0)+(D.d||0),on=Object.keys(NM).filter(k=>B[k]).map(k=>NM[k]);
+  return _l.apply(this,arguments)+'\nbisect OFF: '+(on.length?on.join(' '):'none')+(fa?' | frame '+fa.toFixed(1)+'ms ('+Math.round(1000/fa)+'fps) busy '+busy.toFixed(1)+' other~'+Math.max(0,fa-busy).toFixed(1):'')}}
+}catch(e){console.error('zz42',e)}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
