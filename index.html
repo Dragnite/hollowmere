@@ -1422,9 +1422,9 @@ const sh=shake>0?[Math.round(R(-shake,shake)*.6),Math.round(R(-shake,shake)*.6)]
 x.drawImage(M.cvs,-Math.round(cam.x),-Math.round(cam.y));cam.x=Math.round(cam.x);cam.y=Math.round(cam.y);
 drawFx(1);for(const e of M.en)if(e.st=='tele')drawTele(e);
 if(M.lair&&M.kind=='z'&&M.en.some(e=>e.lair))glow(M.lair.x-cam.x,M.lair.y-cam.y-8,46,'#ff3030',.16+Math.sin(tm*2)*.04);
-const L2=[];{const cx0=cam.x-170,cx1=cam.x+VW+170,cy0=cam.y-90,cy1=cam.y+VH+240;for(const p of M.pr)if(!p.fg&&p.x>cx0&&p.x<cx1&&p.y>cy0&&p.y<cy1)L2.push({y:p.y,f:()=>dprop(p)});for(const n of M.nodes)if(n.x>cx0&&n.x<cx1&&n.y>cy0&&n.y<cy1)L2.push({y:n.y,f:()=>drawNode(n)})}if(M.crt)for(const c of M.crt)L2.push({y:c.y,f:()=>critDraw(c)});for(const n of M.npcs)L2.push({y:n.y,f:()=>drawNpc(n)});for(const e of M.en)L2.push({y:e.y,f:()=>drawEn(e)});for(const a of ALY)L2.push({y:a.y,f:()=>allyDraw(a)});for(const ex of M.ex)L2.push({y:ex.y+12,f:()=>drawPortal(ex)});
+if(window.XBL2&&CFG.perf)window.XBL2();else{const L2=[];{const cx0=cam.x-170,cx1=cam.x+VW+170,cy0=cam.y-90,cy1=cam.y+VH+240;for(const p of M.pr)if(!p.fg&&p.x>cx0&&p.x<cx1&&p.y>cy0&&p.y<cy1)L2.push({y:p.y,f:()=>dprop(p)});for(const n of M.nodes)if(n.x>cx0&&n.x<cx1&&n.y>cy0&&n.y<cy1)L2.push({y:n.y,f:()=>drawNode(n)})}if(M.crt)for(const c of M.crt)L2.push({y:c.y,f:()=>critDraw(c)});for(const n of M.npcs)L2.push({y:n.y,f:()=>drawNpc(n)});for(const e of M.en)L2.push({y:e.y,f:()=>drawEn(e)});for(const a of ALY)L2.push({y:a.y,f:()=>allyDraw(a)});for(const ex of M.ex)L2.push({y:ex.y+12,f:()=>drawPortal(ex)});
 if(dun&&M.stairs)L2.push({y:M.stairs.y+4,f:()=>{const sx=M.stairs.x-cam.x,sy=M.stairs.y-cam.y;rc(x,sx-12,sy-4,24,12,'#2a2238');for(let i=0;i<4;i++)rc(x,sx-10+i*2,sy-2+i*2,20-i*4,2,i%2?'#4a3d6e':'#3a2d5e');if(dun.clear)glow(sx,sy,28+Math.sin(tm*4)*4,'#a070ff',.7)}});
-L2.push({y:P.y,f:drawPlayer});L2.push({y:P.y+30,f:boonDraw});L2.sort((a,b)=>a.y-b.y).forEach(o=>o.f());
+L2.push({y:P.y,f:drawPlayer});L2.push({y:P.y+30,f:boonDraw});L2.sort((a,b)=>a.y-b.y).forEach(o=>o.f());}
 for(const p of EPR){const sx=p.x-cam.x,sy=p.y-cam.y;glow(sx,sy,8,p.c,.9);rc(x,sx-1,sy-1,3,3,'#fff')}
 drawFx(0);
 for(const p of M.pr)if(p.fg){const sx=p.x-cam.x,sy=p.y-cam.y;if(sy<-80||sy>VH+130||sx<-60||sx>VW+60)continue;const near=Math.abs(P.x-p.x)<26&&P.y>p.y-60&&P.y<p.y+20;ap(p.n,p.x,p.y,near?.5:1)}
@@ -1927,24 +1927,26 @@ $('menu').innerHTML=TBS.map(([w,k,l,i])=>`<button class="tb" data-w="${w}" data-
 $('menu').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!b||!started)return;const w=b.dataset.w;if(w=='auto'){toggleAuto();return}toggleW(w)});
 function toggleW(w){if(!started)return;if(wopen&&wk==w)closeW();else openW(w)}
 const ptc=$('pt').getContext('2d'),mmx=$('mm').getContext('2d');ptc.imageSmoothingEnabled=false;mmx.imageSmoothingEnabled=false;
-function ui(){if(!P||!started)return;v5Hud();pmHud();{const ab=$('afb');if(ab){ab.style.width=Math.max(0,P.af/afMax()*100)+'%';ab.style.background=P.af<afMax()*.2?'#e5484d':'#6bdc7a'}}const k=CL[P.c],ids=barIds();if(ids.join()!=barSig)buildBar();
-setT('nm',P.name+'  Lv '+P.lv);$('hb').style.width=cl(P.hp/mhp()*100,0,100)+'%';setT('ht',Math.ceil(P.hp)+' / '+mhp());$('mb').style.width=cl(P.mp/mmp()*100,0,100)+'%';setT('mt',Math.floor(P.mp)+' / '+mmp());
-const need=lvNeed(P.lv);$('xb').style.width=cl(P.xp/need*100,0,100)+'%';setT('xt','EXP '+Math.floor(P.xp)+' / '+need+'   ('+(P.xp/need*100).toFixed(1)+'%)');
+/* Xbox profile: dirty-flagged DOM writes (read/write only on change), cached child refs, HUD strings rebuilt at 10Hz, portrait only when it changes, minimap at 20Hz */
+const XQ40=(b,s)=>{const k='__'+s,c=b[k];if(c&&c.parentNode&&b.contains(c))return c;return b[k]=b.querySelector(s)},XT40=(e,t)=>{if(e.__t!==t){e.__t=t;e.textContent=t}},XH40=(e,v)=>{if(e.__h!==v){e.__h=v;e.style.height=v}},XG40=(b,c,on)=>{const k='__c'+c;if(b[k]!==on){b[k]=on;b.classList.toggle(c,on)}},XW40=(e,v)=>{if(e.__w!==v){e.__w=v;e.style.width=v}};
+function ui(){if(!P||!started)return;const XB=!!window.XB37,nowU=performance.now(),slow=XB?(nowU-(window.__us||0)>100?((window.__us=nowU),true):false):true;v5Hud();pmHud();{const ab=$('afb');if(ab){const w=Math.max(0,P.af/afMax()*100).toFixed(XB?1:6)+'%',bg=P.af<afMax()*.2?'#e5484d':'#6bdc7a';if(XB){XW40(ab,w);if(ab.__bg!==bg){ab.__bg=bg;ab.style.background=bg}}else{ab.style.width=Math.max(0,P.af/afMax()*100)+'%';ab.style.background=bg}}}const k=CL[P.c],ids=barIds();if(ids.join()!=barSig)buildBar();
+setT('nm',P.name+'  Lv '+P.lv);XW40($('hb'),cl(P.hp/mhp()*100,0,100).toFixed(1)+'%');setT('ht',Math.ceil(P.hp)+' / '+mhp());XW40($('mb'),cl(P.mp/mmp()*100,0,100).toFixed(1)+'%');setT('mt',Math.floor(P.mp)+' / '+mmp());
+const need=lvNeed(P.lv);XW40($('xb'),cl(P.xp/need*100,0,100).toFixed(2)+'%');setT('xt','EXP '+Math.floor(P.xp)+' / '+need+'   ('+(P.xp/need*100).toFixed(1)+'%)');
 setT('zn',dun?(dun.tw?'Tower - Floor ':'Delve - Floor ')+dun.f:ZN[zone].n);
-setH('cur',`<span data-tip="h:Gold">${ic('i_coin','#ffd24a')}${P.g}</span><span data-tip="h:Ore - sell or smelt">${ic('i_ore','#9ac8ff')}${P.ore}</span><span data-tip="h:Herbs - used in potions">${ic('i_herb','#7cdc7a')}${P.herb}</span><span data-tip="ui:pot">${ic('i_potion','#ff6b7a')}${potTotal()}</span><span data-tip="h:Echo shards">${ic('i_shard','#c86bff')}${P.shard}</span><span data-tip="h:Gear power">${ic('i_star','#ffb347')}${power()}</span>`+(`<span class="stk${KS>1?' on':''}" style="--k:${Math.min(1,Math.max(0,(KS-1)/20)).toFixed(2)}">${KS>1?`Kill streak x${KS} (+${Math.round(Math.min(.6,KS*.03)*100)}%)`:'Kill streak'}</span>`));
-let bh='';for(const b in BUFN){if(P.buff[b]>0){const q=BUFN[b];bh+=`<span data-tip="h:${encodeURIComponent('<h4>'+q[0]+'</h4><div class=d>'+q[1]+'</div>')}" style="border-color:${q[2]}">${ic('i_fx',q[2])}<small>${Math.ceil(P.buff[b])}</small></span>`}}setH('buffs',bh);
+if(slow)setH('cur',`<span data-tip="h:Gold">${ic('i_coin','#ffd24a')}${P.g}</span><span data-tip="h:Ore - sell or smelt">${ic('i_ore','#9ac8ff')}${P.ore}</span><span data-tip="h:Herbs - used in potions">${ic('i_herb','#7cdc7a')}${P.herb}</span><span data-tip="ui:pot">${ic('i_potion','#ff6b7a')}${potTotal()}</span><span data-tip="h:Echo shards">${ic('i_shard','#c86bff')}${P.shard}</span><span data-tip="h:Gear power">${ic('i_star','#ffb347')}${power()}</span>`+(`<span class="stk${KS>1?' on':''}" style="--k:${Math.min(1,Math.max(0,(KS-1)/20)).toFixed(2)}">${KS>1?`Kill streak x${KS} (+${Math.round(Math.min(.6,KS*.03)*100)}%)`:'Kill streak'}</span>`));
+let bh='';if(slow)for(const b in BUFN){if(P.buff[b]>0){const q=BUFN[b];bh+=`<span data-tip="h:${encodeURIComponent('<h4>'+q[0]+'</h4><div class=d>'+q[1]+'</div>')}" style="border-color:${q[2]}">${ic('i_fx',q[2])}<small>${Math.ceil(P.buff[b])}</small></span>`}}if(slow)setH('buffs',bh);
 const bs=$('abar').children;let bi=0;
 for(const b of bs){if(!b.classList.contains('hk'))continue;const q=b.dataset.k;
-if(q=='p'){$('pc').textContent=potTotal();b.classList.toggle('no',potTotal()<=0);continue}
-if(q=='v'){const o=b.querySelector('.cdo');o.style.height=P.lv<3?'100%':(P.mvcd>0?cl(P.mvcd/16*100,0,100)+'%':'0');continue}
-if(q=='x'){b.firstChild.nextSibling&&0;const o=b.querySelector('.cdo');o.style.height=P.rcd>0?cl(P.rcd/1.1*100,0,100)+'%':'0';continue}
+if(q=='p'){XT40($('pc'),''+potTotal());XG40(b,'no',potTotal()<=0);continue}
+if(q=='v'){XH40(XQ40(b,'.cdo'),P.lv<3?'100%':(P.mvcd>0?cl(P.mvcd/16*100,0,100).toFixed(0)+'%':'0'));continue}
+if(q=='x'){XH40(XQ40(b,'.cdo'),P.rcd>0?cl(P.rcd/1.1*100,0,100).toFixed(0)+'%':'0');continue}
 const id=q=='r'?k.ult:ids[+q];if(!id)continue;const o=ef(id),cdv=P.cd[id]||0,mxc=Math.max(.1,o.cd*cdm());
-if(q=='r'){b.style.setProperty('--p',cl(P.ug,0,100)+'%');b.classList.toggle('rdy',P.ug>=100&&cdv<=0);b.querySelector('.cdt').textContent=P.ug>=100?'':Math.floor(P.ug)+'%';continue}
-b.querySelector('.cdo').style.height=cdv>0?cl(cdv/mxc*100,0,100)+'%':'0';b.querySelector('.cdt').textContent=cdv>0?(cdv>=1?Math.ceil(cdv):cdv.toFixed(1)):'';b.classList.toggle('no',P.mp<o.mp);const r=SP_(id);b.querySelector('.rk').textContent=r.r>1||r.p?r.r+(r.p?'p':''):''}
-const tb=$('menu').children;for(const b of tb){const w=b.dataset.w;b.classList.toggle('on',w=='auto'?auto:(wopen&&wk==w))}
+if(q=='r'){const pv=cl(P.ug,0,100).toFixed(0)+'%';if(b.__p!==pv){b.__p=pv;b.style.setProperty('--p',pv)}XG40(b,'rdy',P.ug>=100&&cdv<=0);XT40(XQ40(b,'.cdt'),P.ug>=100?'':Math.floor(P.ug)+'%');continue}
+XH40(XQ40(b,'.cdo'),cdv>0?cl(cdv/mxc*100,0,100).toFixed(0)+'%':'0');XT40(XQ40(b,'.cdt'),cdv>0?(cdv>=1?''+Math.ceil(cdv):cdv.toFixed(1)):'');XG40(b,'no',P.mp<o.mp);const r=SP_(id);XT40(XQ40(b,'.rk'),r.r>1||r.p?r.r+(r.p?'p':''):'')}
+const tb=$('menu').children;for(const b of tb){const w=b.dataset.w;XG40(b,'on',!!(w=='auto'?auto:(wopen&&wk==w)))}
 const pr=promptI&&!wopen&&!trans?`<kbd>E</kbd> ${promptI.l}`:'';setH('prompt',pr);$('leave').hidden=!dun||!!dun.tw;$('leavet').hidden=!(dun&&dun.tw);
 ptc.fillStyle='#2a1c10';ptc.fillRect(0,0,48,48);ptc.save();ptc.scale(1.5,1.5);hero(ptc,16,30,0,0,{race:P.race,cls:P.c,look:P.look});ptc.restore();
-$('hud').style.opacity=SCR.ti>.05?.28:1;mmDraw()}
+{const op=SCR.ti>.05?.28:1,hd=$('hud');if(hd.__o!==op){hd.__o=op;hd.style.opacity=op}}if(!XB||nowU-(window.__um||0)>50){window.__um=nowU;mmDraw()}}
 function mmDraw(){if(!M||!M.mm)return;mmx.fillStyle='#000';mmx.fillRect(0,0,96,72);const vw=96,vh=72,ox=cl(P.x/16-vw/2,0,Math.max(0,M.w-vw)),oy=cl(P.y/16-vh/2,0,Math.max(0,M.h-vh)),src=M.mmv||M.mm;mmx.drawImage(src,ox,oy,vw,vh,0,0,vw,vh);
 const vis=(px,py)=>!M.seen||M.seen[(py>>4)*M.w+(px>>4)];const dot=(px,py,c,s=2)=>{mmx.fillStyle=c;mmx.fillRect(Math.round(px/16-ox-s/2),Math.round(py/16-oy-s/2),s,s)};
 for(const e of M.en)if(vis(e.x|0,e.y|0))dot(e.x,e.y,e.boss?'#ff0':'#f44');for(const n of M.nodes)if(n.t<=0&&vis(n.x|0,n.y|0))dot(n.x,n.y,n.k=='ore'?'#7cf':'#6f6');
@@ -2016,7 +2018,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23v</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23x</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7377,27 +7379,17 @@ window.PLAT31=PLAT31;window.HZ29=60;
 /* Xbox: a slimmer controller legend by default so the play area is not squeezed (one-time) */
 try{if(window.PLAT31=='xbox'&&CFG.gpzm!==1){CFG.gpzm=1;if(CFG.gpz==null||CFG.gpz==1)CFG.gpz=.6;saveCFG()}}catch(e){}
 
-/* ===== v14.23d: screen fill (wide view) setting + console auto-refresh to 60 FPS ===== */
+/* ===== v14.23d: screen fill (wide view) setting +  ===== */
 {
  if(CFG.wide==null)CFG.wide=1;
  const isCon=()=>window.PLAT31=='xbox';
- if(CFG.arf==null)CFG.arf=isCon()?1:0;
+ delete CFG.arf;
  /* re-fit when gameplay starts/stops (the wide view only applies in play) */
  let lastS=null;setInterval(()=>{try{if(started!==lastS){lastS=started;fit()}}catch(e){}},300);
  const _a=applyCFG;let lw=CFG.wide;applyCFG=function(){_a.apply(this,arguments);try{if(CFG.wide!==lw){lw=CFG.wide;fit()}}catch(e){}};
  /* settings */
  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const s=h.indexOf('<div class="set">',k);if(s<0)return h;
-  const add=seg('wide','Screen fill',[[1,'Fill the screen'],[0,'Keep 16:9 (bars)']])+seg('arf','Auto refresh to 60 FPS',[[1,'On'],[0,'Off']]);return h.slice(0,s+17)+add+h.slice(s+17)};
- /* console auto-refresh: when frames fall under 50 FPS, switch Auto performance and Performance mode off and on again */
- let fr=0,t0=performance.now(),low=0,cool=0,refreshes=0;
- let lastRf=0,streak=0;const refresh=()=>{try{refreshes++;const nw=performance.now();streak=nw-lastRf<100000?streak+1:1;lastRf=nw;if(streak>=3&&!CFG.tcap&&isCon()){CFG.tcap=1080}if(streak>=6&&CFG.tcap===1080&&isCon())CFG.tcap=720;const o={aq:CFG.aq,perf:CFG.perf};CFG.aq=0;CFG.perf=0;applyCFG();try{if(window.AQ29)AQ29.undo.length=0}catch(e){}try{SHD22.clear()}catch(e){}try{canvasRefresh36()}catch(e){}
-   setTimeout(()=>{try{CFG.perf=1;CFG.aq=1;applyCFG();saveCFG();window.RFR29=refreshes}catch(e){}},60)}catch(e){}};
- window.refresh29=refresh;
- setInterval(()=>{try{if(CFG.arf&&isCon()&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&performance.now()-(window.__lastRf36||0)>150000){window.__lastRf36=performance.now();canvasRefresh36()}}catch(e){}},20000);
- window.__lastRf36=performance.now();
- const tick=()=>{fr++;const t=performance.now();if(t-t0>=2500){const f=fr*1000/(t-t0);fr=0;t0=t;
-   if(CFG.arf&&started&&!document.hidden&&!wopen&&!trans&&!CUT.on&&(window.HZ29||60)>=55&&CFG.perf!==0){if(f<50)low++;else low=0;if(low>=2&&t>cool){low=0;cool=t+15000;refresh()}}else low=0}
-  requestAnimationFrame(tick)};requestAnimationFrame(tick);
+  const add=seg('wide','Screen fill',[[1,'Fill the screen'],[0,'Keep 16:9 (bars)']]);return h.slice(0,s+17)+add+h.slice(s+17)};
 }
 
 /* ===== v14.23e: tutorial targets always point at something real; Xbox input-mode and pad-spam hardening ===== */
@@ -7573,7 +7565,6 @@ try{if(XBOX29&&window.speechSynthesis){speechSynthesis.speak=function(){};speech
 try{if(XBOX29){
  if(!CFG.xbm37){CFG.xbm37=1;delete CFG.tcap;CFG.perf=1;if(CFG.arf==null||CFG.arf===0)CFG.arf=1;if(CFG.pcache===0)delete CFG.pcache;try{saveCFG();applyCFG()}catch(e){}}
  setTimeout(()=>{try{canvasRefresh36()}catch(e){}},1500);
- let d=0;const iv=setInterval(()=>{try{if(!started||d)return;d=1;clearInterval(iv);setTimeout(()=>{try{window.refresh29&&refresh29()}catch(e){}},3500)}catch(e){}},500);
 }}catch(e){}
 
 /* ===== v14.23l: phone cool-down governor, context icons for the interact button, touch layout migration ===== */
@@ -7702,7 +7693,7 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  window.MDEN=()=>Math.max(.2,Math.min(1,CFG.mden==null?.5:CFG.mden));
  {const _f=fillEn;fillEn=function(n){return _f(Math.max(3,Math.round(n*window.MDEN())))}}
  {const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='ui')return h;const k=h.indexOf('<h3 class="kbh">Language options</h3>');if(k<0)return h;const v=Math.round(window.MDEN()*100);
-  return h.slice(0,k)+`<div class="set"><label>Monster density</label><div style="display:flex;gap:.5em;align-items:center"><input type="range" min="20" max="100" step="5" value="${v}" data-s="mden"><span class="val">${v}%</span></div></div>`+h.slice(k)}}
+  return h.slice(0,k)+`<div class="set"><label>Monster density</label><div style="display:flex;gap:.5em;align-items:center"><input type="range" min="20" max="100" step="5" value="${v}" data-s="mden"><span class="val">${v}%</span></div>${seg('fsm39','Frame smoothing',[[1,'On'],[0,'Off']])}</div>`+h.slice(k)}}
  /* skill-bar cells query the same three children every frame: cache them */
  {const _q=Element.prototype.querySelector,QS={'.cdo':1,'.cdt':1,'.rk':1};Element.prototype.querySelector=function(q){if(QS[q]===1){const m=this.__qc||(this.__qc={});let n=m[q];if(n&&n.parentNode&&this.contains(n))return n;n=_q.call(this,q);m[q]=n;return n}return _q.call(this,q)}}
  /* idle controller: (1) one real getGamepads() per frame instead of three, only every 50ms once the pad has been still for 2s (empty pad states stall some Xbox Edge builds); (2) keep a near-silent audio node running so the console never treats the page as idle/low-power */
@@ -7714,7 +7705,31 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  /* idle ping: a zero-strength rumble keeps the pad API 'in use' while the stick is still */
  setInterval(()=>{try{if(!started||!GP.on||performance.now()-GP.act<3000)return;const g=navigator.getGamepads()[0]||[...navigator.getGamepads()].find(Boolean);const a=g&&g.vibrationActuator;if(a&&a.playEffect)a.playEffect('dual-rumble',{duration:1,strongMagnitude:0,weakMagnitude:0}).catch(()=>{})}catch(e){}},1000)
  /* the 'auto refresh' loop (drop under 50fps -> reset canvases + toggle perf) was itself causing 150-220ms frames and blank screens on console: off by default (still available in Graphics settings; the refresh at page load stays) */
- if(!CFG.xbm39){CFG.xbm39=1;CFG.arf=0;try{saveCFG()}catch(e){}}
+ delete CFG.arf;
+ /* frame smoothing: low or uneven frame rates feel choppy mostly because every frame advances the world by a different step. Feed the game a steadied step (median of recent frames, spikes clipped, the clipped time paid back gradually) so movement and animation glide */
+ if(CFG.fsm39==null)CFG.fsm39=1;
+ {const _l=loop,H=[];let prev=0,vt=0,debt=0;loop=function(t){try{if(!CFG.fsm39||!started||document.hidden){prev=t;vt=t;return _l(t)}
+   if(!prev||t-prev>400||t<prev){prev=t;vt=t;H.length=0;debt=0;return _l(t)}
+   const raw=(t-prev)/1000;prev=t;H.push(raw);if(H.length>6)H.shift();const m=H.slice().sort((a,b)=>a-b)[H.length>>1];
+   let used=Math.max(m*.85,Math.min(raw,m*1.25));debt+=raw-used;const pay=debt*.1;used+=pay;debt-=pay;if(debt>.25)debt=.25;if(debt<-.25)debt=-.25;
+   vt+=used*1000;if(Math.abs(t-vt)>250)vt=t;return _l(vt)}catch(e){return _l(t)}}}
+ /* Xbox profile: Y-sorted draw list with zero per-frame allocation (no closures/objects/arrays): parallel preallocated arrays, one native numeric sort of packed keys, switch dispatch */
+ {const N=1023,K=new Float64Array(N+1),R=new Array(N+1).fill(null),T=new Uint8Array(N+1);let n=0;
+  const add=(t,o,y)=>{if(n<N){R[n]=o;T[n]=t;K[n]=Math.round(y*16)*1024+n;n++}};
+  const stairs=()=>{const sx=M.stairs.x-cam.x,sy=M.stairs.y-cam.y;rc(x,sx-12,sy-4,24,12,'#2a2238');for(let i=0;i<4;i++)rc(x,sx-10+i*2,sy-2+i*2,20-i*4,2,i%2?'#4a3d6e':'#3a2d5e');if(dun.clear)glow(sx,sy,28+Math.sin(tm*4)*4,'#a070ff',.7)};
+  window.XBL2=function(){n=0;const cx0=cam.x-170,cx1=cam.x+VW+170,cy0=cam.y-90,cy1=cam.y+VH+240;
+   for(let i=0,a=M.pr,l=a.length;i<l;i++){const p=a[i];if(!p.fg&&p.x>cx0&&p.x<cx1&&p.y>cy0&&p.y<cy1)add(0,p,p.y)}
+   for(let i=0,a=M.nodes,l=a.length;i<l;i++){const q=a[i];if(q.x>cx0&&q.x<cx1&&q.y>cy0&&q.y<cy1)add(1,q,q.y)}
+   if(M.crt)for(let i=0,a=M.crt,l=a.length;i<l;i++)add(2,a[i],a[i].y);
+   for(let i=0,a=M.npcs,l=a.length;i<l;i++)add(3,a[i],a[i].y);
+   for(let i=0,a=M.en,l=a.length;i<l;i++)add(4,a[i],a[i].y);
+   for(let i=0,a=ALY,l=a.length;i<l;i++)add(5,a[i],a[i].y);
+   for(let i=0,a=M.ex,l=a.length;i<l;i++)add(6,a[i],a[i].y+12);
+   if(dun&&M.stairs)add(7,null,M.stairs.y+4);
+   add(8,null,P.y);add(9,null,P.y+30);
+   const s=K.subarray(0,n);s.sort();
+   for(let i=0;i<n;i++){const v=s[i],id=v-Math.floor(v/1024)*1024,o=R[id];switch(T[id]){case 0:dprop(o);break;case 1:drawNode(o);break;case 2:critDraw(o);break;case 3:drawNpc(o);break;case 4:drawEn(o);break;case 5:allyDraw(o);break;case 6:drawPortal(o);break;case 7:stairs();break;case 8:drawPlayer();break;case 9:boonDraw();break}}
+   for(let i=0;i<n;i++)R[i]=null}}
 }catch(e){}}
 
 /* v14.23r: compare any item tooltip/detail against the item equipped in the same slot */
