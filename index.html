@@ -1428,7 +1428,7 @@ L2.push({y:P.y,f:drawPlayer});L2.push({y:P.y+30,f:boonDraw});L2.sort((a,b)=>a.y-
 for(const p of EPR){const sx=p.x-cam.x,sy=p.y-cam.y;glow(sx,sy,8,p.c,.9);rc(x,sx-1,sy-1,3,3,'#fff')}
 drawFx(0);
 for(const p of M.pr)if(p.fg){const sx=p.x-cam.x,sy=p.y-cam.y;if(sy<-80||sy>VH+130||sx<-60||sx>VW+60)continue;const near=Math.abs(P.x-p.x)<26&&P.y>p.y-60&&P.y<p.y+20;ap(p.n,p.x,p.y,near?.5:1)}
-if(dun){dkx.globalCompositeOperation='source-over';dkx.fillStyle='rgba(3,1,12,.84)';dkx.fillRect(0,0,VW,VH);dkx.globalCompositeOperation='destination-out';const lt=(px,py,r,a)=>{const g=dkx.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,'rgba(0,0,0,'+a+')');g.addColorStop(1,'rgba(0,0,0,0)');dkx.fillStyle=g;dkx.fillRect(px-r,py-r,r*2,r*2)};lt(P.x-cam.x,P.y-cam.y-8,135,1);for(const p of M.pr)if(p.n=='torch'){const sx=p.x-cam.x,sy=p.y-cam.y-10;if(sx>-80&&sx<VW+80&&sy>-80&&sy<VH+80)lt(sx,sy,56+Math.sin(tm*9+p.x)*5,.85)}if(M.stairs&&dun.clear)lt(M.stairs.x-cam.x,M.stairs.y-cam.y,60,.9);x.drawImage(dk,0,0)}
+if(dun){dkx.globalCompositeOperation='source-over';dkx.fillStyle='rgba(3,1,12,.84)';dkx.fillRect(0,0,VW,VH);dkx.globalCompositeOperation='destination-out';const lt=(window.XBLT39&&CFG.perf)?window.XBLT39:(px,py,r,a)=>{const g=dkx.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,'rgba(0,0,0,'+a+')');g.addColorStop(1,'rgba(0,0,0,0)');dkx.fillStyle=g;dkx.fillRect(px-r,py-r,r*2,r*2)};lt(P.x-cam.x,P.y-cam.y-8,135,1);for(const p of M.pr)if(p.n=='torch'){const sx=p.x-cam.x,sy=p.y-cam.y-10;if(sx>-80&&sx<VW+80&&sy>-80&&sy<VH+80)lt(sx,sy,56+Math.sin(tm*9+p.x)*5,.85)}if(M.stairs&&dun.clear)lt(M.stairs.x-cam.x,M.stairs.y-cam.y,60,.9);x.drawImage(dk,0,0)}
 else if(CFG.wea){const n=Math.ceil(26*PQ());for(let i=0;i<n;i++){const px=(i*97+tm*(8+i%5*4))%(VW+20)-10,py=(i*53+tm*(10+i%3*5)+Math.sin(tm+i)*10)%(VH+20)-10;x.fillStyle=['#b8f08a','#ff8a3d','#ffb050','#fff','#7cffd8','#a8ff9a','#ff6a2a','#d0b8ff'][zone%8];x.globalAlpha=.6;x.fillRect(px,py,zone==3?2:1,zone==3?2:2)}x.globalAlpha=1}
 if(CFG.vig){x.fillStyle=vgG;x.fillRect(0,0,VW,VH)}
 scrDraw();
@@ -1946,7 +1946,7 @@ XH40(XQ40(b,'.cdo'),cdv>0?cl(cdv/mxc*100,0,100).toFixed(0)+'%':'0');XT40(XQ40(b,
 const tb=$('menu').children;for(const b of tb){const w=b.dataset.w;XG40(b,'on',!!(w=='auto'?auto:(wopen&&wk==w)))}
 const pr=promptI&&!wopen&&!trans?`<kbd>E</kbd> ${promptI.l}`:'';setH('prompt',pr);$('leave').hidden=!dun||!!dun.tw;$('leavet').hidden=!(dun&&dun.tw);
 ptc.fillStyle='#2a1c10';ptc.fillRect(0,0,48,48);ptc.save();ptc.scale(1.5,1.5);hero(ptc,16,30,0,0,{race:P.race,cls:P.c,look:P.look});ptc.restore();
-{const op=SCR.ti>.05?.28:1,hd=$('hud');if(hd.__o!==op){hd.__o=op;hd.style.opacity=op}}if(!XB||nowU-(window.__um||0)>50){window.__um=nowU;mmDraw()}}
+{const hd=$('hud');if(XB){const v=SCR.ti>.05?'hidden':'';if(hd.__v!==v){hd.__v=v;hd.style.visibility=v}}else{const op=SCR.ti>.05?.28:1;if(hd.__o!==op){hd.__o=op;hd.style.opacity=op}}}if(!XB||nowU-(window.__um||0)>50){window.__um=nowU;mmDraw()}}
 function mmDraw(){if(!M||!M.mm)return;mmx.fillStyle='#000';mmx.fillRect(0,0,96,72);const vw=96,vh=72,ox=cl(P.x/16-vw/2,0,Math.max(0,M.w-vw)),oy=cl(P.y/16-vh/2,0,Math.max(0,M.h-vh)),src=M.mmv||M.mm;mmx.drawImage(src,ox,oy,vw,vh,0,0,vw,vh);
 const vis=(px,py)=>!M.seen||M.seen[(py>>4)*M.w+(px>>4)];const dot=(px,py,c,s=2)=>{mmx.fillStyle=c;mmx.fillRect(Math.round(px/16-ox-s/2),Math.round(py/16-oy-s/2),s,s)};
 for(const e of M.en)if(vis(e.x|0,e.y|0))dot(e.x,e.y,e.boss?'#ff0':'#f44');for(const n of M.nodes)if(n.t<=0&&vis(n.x|0,n.y|0))dot(n.x,n.y,n.k=='ore'?'#7cf':'#6f6');
@@ -2018,7 +2018,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23x</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23y</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7730,6 +7730,23 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
    const s=K.subarray(0,n);s.sort();
    for(let i=0;i<n;i++){const v=s[i],id=v-Math.floor(v/1024)*1024,o=R[id];switch(T[id]){case 0:dprop(o);break;case 1:drawNode(o);break;case 2:critDraw(o);break;case 3:drawNpc(o);break;case 4:drawEn(o);break;case 5:allyDraw(o);break;case 6:drawPortal(o);break;case 7:stairs();break;case 8:drawPlayer();break;case 9:boonDraw();break}}
    for(let i=0;i<n;i++)R[i]=null}}
+ /* ITEM 3 - delve darkness: stamp cached soft-light sprites with drawImage instead of building a radial gradient (and a full-size fillRect) for every light, every frame. Same result: a black radial falloff cut out of the dark overlay with destination-out; sprite alpha is scaled by globalAlpha, which is linear, so it equals the gradient's own alpha. */
+ {const LS=new Map(),spr=r=>{let c=LS.get(r);if(c)return c;if(LS.size>160)LS.clear();c=document.createElement('canvas');c.width=c.height=r*2;const g=c.getContext('2d'),gr=g.createRadialGradient(r,r,0,r,r,r);gr.addColorStop(0,'rgba(0,0,0,1)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,r*2,r*2);LS.set(r,c);return c};
+  window.XBLT39=(px,py,r,a)=>{r=Math.max(1,Math.round(r));dkx.globalAlpha=a;dkx.drawImage(spr(r),Math.round(px)-r,Math.round(py)-r);dkx.globalAlpha=1}}
+ /* ITEM 4 - no software-rendered CSS effects on Xbox: blurred drop/glow shadows become hard 1-2px rings, brightness/grayscale filters become plain opacity or border changes, the blur text-shadows on live HUD text become a hard 1px drop, and the infinite glow animation (repaints a blurred shadow every frame) animates a border colour instead. The whole-HUD opacity fade is handled in 45_hud.js (visibility). */
+ {const st=document.createElement('style');st.textContent=[
+  '.xb37 .pn{box-shadow:inset 0 0 0 calc(var(--u)*1) #130b04,inset 0 calc(var(--u)*2) 0 #ffffff14}',
+  '.xb37 .in{box-shadow:none}',
+  '.xb37 #tip{box-shadow:0 0 0 calc(var(--u)*1) #000}',
+  '.xb37 .sl{box-shadow:none!important}',
+  '.xb37 .tnd.on{box-shadow:0 0 0 2px #e8c24a99}.xb37 .tnd.max{box-shadow:0 0 0 2px #7cff9f99}.xb37 .bni.fus{box-shadow:0 0 0 2px #ffb02a}.xb37 .bnc:hover{box-shadow:0 0 0 2px var(--rc)}.xb37 .msl.sel{box-shadow:0 0 0 2px #e8c24a66}',
+  '.xb37 #mm2 .mcol,.xb37 #mm2 .mdet{box-shadow:0 0 0 1px #000}.xb37 #mm2 .msl.sel{box-shadow:0 0 0 1px #e8c24a}',
+  '.xb37 button:hover:not(:disabled){filter:none}.xb37 .hk.no .ic{filter:none;opacity:.4}.xb37 #mm2 .msl:hover{filter:none}',
+  '.xb37 .bar span,.xb37 #buffs em,.xb37 .hk .kc,.xb37 .hk .cdt,.xb37 .hk .rk,.xb37 .sl small,.xb37 .hapb span{text-shadow:0 calc(var(--u)*1) 0 #000}',
+  '.xb37 #ban,.xb37 #loc,.xb37 #cc h1,.xb37 #l1,.xb37 .mlogo h1{text-shadow:0 calc(var(--u)*2) 0 #000}',
+  '@keyframes urx{0%,100%{border-color:#ffb02a}50%{border-color:#ffe27a}}',
+  '.xb37 .hk.ult.rdy,.xb37 .tb.pulse{animation:urx 1s infinite}'
+ ].join('');document.head.appendChild(st)}
 }catch(e){}}
 
 /* v14.23r: compare any item tooltip/detail against the item equipped in the same slot */
