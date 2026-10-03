@@ -1350,14 +1350,15 @@ if(M.kind=='z'){mkT-=dt;if(M.lair&&M.lair.t>0)M.lair.t-=dt;if(mkT<=0){mkT=3;fill
 for(const ex of M.ex){if(ex.cool>tm)continue;if(Math.abs(P.x-ex.x)<ex.w&&Math.abs(P.y-ex.y)<ex.h){const nz=zone+ex.dir;if(nz<0){toast('The gate is sealed.','seal',1800);P.x+=14;ex.cool=tm+1.2}else if(nz>=ZN.length){toast('The path ends here (for now).','end',1800);P.x-=14;ex.cool=tm+1.2}else if(P.lv<ZN[nz].lv){toast('Requires level '+ZN[nz].lv+' to enter '+ZN[nz].n,'lvl'+nz,2200);P.x-=ex.dir*14;ex.cool=tm+1.2;sfx('uierr',.6)}else{sfx('portal');ex.cool=tm+3;go(()=>{enterZone(nz,ex.dir);sfx('tele')},{zone:nz})}}}}
 else if(dun&&!dun.clear&&M.en.length==0){dun.clear=1;floorClear();ban('FLOOR CLEARED');sfx('rune');M.ints.push({x:M.stairs.x,y:M.stairs.y+10,r:26,l:'Descend',a:()=>relicAsk()})}
 cam.x+=(cl(P.x-VW/2,0,M.w*16-VW)-cam.x)*Math.min(1,rdt*7);cam.y+=(cl(P.y-VH/2-10,0,M.h*16-VH)-cam.y)*Math.min(1,rdt*7);uiT-=rdt;if(uiT<=0){uiT=.1;ui()}}
-function autoBattle(setMove,setAtk){const t=TG,k=CL[P.c];
+function autoBattle(setMove,setAtk){const t=TG,k=CL[P.c];let ap=null;
 if(t){const d=Math.max(.5,dist(t,P)),rr=k.r<=30?k.r*.8:k.r*.75;if(d>rr){const sv=steer(t.x,t.y);setMove(sv)}else if(k.r>30&&d<rr*.45)setMove([-(t.x-P.x)/d,-(t.y-P.y)/d]);if(d<k.r+30)setAtk();
-const near=M.en.filter(e=>dist(e,P)<130).length,bossNear=M.en.some(e=>e.boss&&dist(e,P)<200);
+let near=0,bossNear=false;if(window.XB37){/* console: one allocation-free pass instead of filter() + some() */for(let i=0,a=M.en,l=a.length;i<l;i++){const e=a[i],dd=dist(e,P);if(dd<130)near++;if(!bossNear&&e.boss&&dd<200)bossNear=true}}else{near=M.en.filter(e=>dist(e,P)<130).length;bossNear=M.en.some(e=>e.boss&&dist(e,P)<200)}
 if(P.ug>=100&&(near>=3||bossNear))useUlt();
-barIds().forEach(id=>{if(!id||!known(id)||(P.cd[id]||0)>0)return;const o=ef(id),mpc=o.mp;if(P.mp<mpc)return;const T_=o.t;
+const runSk=id=>{if(!id||!known(id)||(P.cd[id]||0)>0)return;const o=ef(id),mpc=o.mp;if(P.mp<mpc)return;const T_=o.t;
 let ok=false;if(T_=='aoe')ok=d<(o.tg?150:o.r*1.2);else if(T_=='proj'||T_=='chain')ok=d<150;else if(T_=='buff')ok=near>0&&!(P.buff[o.bf]>0)&&o.bf!='m'&&(o.bf!='d'||P.hp<mhp()*.3)&&(o.bf!='v'||P.hp<mhp()*.4)&&!(o.bf=='g'&&near<2);else if(T_=='heal')ok=P.hp<mhp()*.6;else if(T_=='zone')ok=near>=2&&d<110;else if(T_=='sum')ok=near>=2&&!ALY.some(a=>a.ty==o.sum);else if(T_=='dash')ok=false;
-if(ok)useSk(id)})}
-else if(autoPick()){const h=autoPick();setMove(steer(h.x,h.y))}
+if(ok)useSk(id)};
+if(window.XB37){/* console: walk the bar in place (core skills then the 4 slots) instead of building a spread array every call */const cr=CL[P.c].core,sl=P.slots;for(let i=0,l=cr.length+4;i<l;i++)runSk(i<cr.length?cr[i]:(sl[i-cr.length]||null))}else barIds().forEach(runSk)}
+else if((ap=autoPick())){const h=window.XB37?ap:autoPick();setMove(steer(h.x,h.y))}
 else if(dun&&dun.clear&&M.stairs)setMove(steer(M.stairs.x,M.stairs.y+8));
 else if(M.kind=='z'){const n=M.nodes.filter(n=>n.t<=0&&!(n.sk>tm)).sort((a,b)=>dist(a,P)-dist(b,P))[0];if(n&&dist(n,P)<160){const d=dist(n,P);if(!(promptI&&promptI.node===n)&&d>14){setMove(steer(n.x,n.y+6));if(NV.st.c>=3){n.sk=tm+45;NV.st.c=0;NV.F=null}}}}}
 function harvest(n){const sk=n.k=='ore'?'mining':'herb',s=S[sk],q0=1+((s.lv/10)|0)+s.pr+(Math.random()<TB('hb')*.1?1:0),q=Math.max(1,Math.round((n.rk?Math.max(1,q0>>1):q0)*gatherF(sk)));P[n.k]+=q;gain(sk,10+zone*5);questEv(n.k,q);tx(n.x,n.y-26,'+'+q+' '+(n.k=='ore'?ZN[zone].ore[0]:ZN[zone].hb[0]),n.k=='ore'?ZN[zone].ore[1]:ZN[zone].hb[1],1);n.t=40;n.p=0;sfx('gem',.7);burst(n.x,n.y-8,16,n.k=='ore'?ZN[zone].ore[1]:ZN[zone].hb[1],90)}
@@ -2020,7 +2021,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23z</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23aa</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7725,6 +7726,13 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  {const _l=loop;let hid=document.hidden,res=false;
   document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=true;else if(hid){hid=false;res=true}});
   loop=function(t){if(hid){lastT=t;requestAnimationFrame(loop);return}if(res){res=false;lastT=t}return _l(t)}}
+ /* v14.23aa AUTOBATTLE 10Hz: the whole auto-battle decision (target distances, skill choice, steer/path-follow, roam) runs at most every 100ms of game time; the frames in between replay the last move vector and attack flag. A fresh decision is forced at once when the target, the map or the delve changes. afDrain (called every frame while auto is on) is cached the same way. */
+ {const _ab=autoBattle,PV=[0,0];let nt=-1,cT=null,cM=null,cD=null,has=false,hx=0,hy=0,at=false;
+  autoBattle=function(sm,sa){
+   if(tm>=nt||tm<nt-.25||TG!==cT||M!==cM||dun!==cD){nt=tm+.1;cT=TG;cM=M;cD=dun;has=false;at=false;hx=hy=0;
+    _ab(v=>{has=true;hx=v[0];hy=v[1];sm(v)},()=>{at=true;sa()});return}
+   if(has){PV[0]=hx;PV[1]=hy;sm(PV)}if(at)sa()};
+  const _af=afDrain;let ft=-1,fv=1;afDrain=function(){if(tm>=ft+.1||tm<ft){ft=tm;fv=_af()}return fv}}
  /* Xbox profile: Y-sorted draw list with zero per-frame allocation (no closures/objects/arrays): parallel preallocated arrays, one native numeric sort of packed keys, switch dispatch */
  {const N=1023,K=new Float64Array(N+1),R=new Array(N+1).fill(null),T=new Uint8Array(N+1);let n=0;
   const add=(t,o,y)=>{if(n<N){R[n]=o;T[n]=t;K[n]=Math.round(y*16)*1024+n;n++}};
