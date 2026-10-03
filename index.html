@@ -2000,7 +2000,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23i</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23j</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7427,7 +7427,7 @@ function pcTest36(p){const t0=tm,N=4,ts=[t0,t0+.37,t0+1.11,t0+1.93],im=[];
 const _dp36=dprop;
 const AQ36=10;
 dprop=function(p){
- if(!PC36.on||CFG.pcache===0){_dp36(p);return}
+ if(!(PC36.on||(window.PERFX36&&window.PERFX36()))||CFG.pcache===0){_dp36(p);return}
  const n=p.n;if(PC36.bad.has(n)||p.cut!==undefined||p.cd!==undefined||p.v!==undefined||p.fg){_dp36(p);return}
  const sx=p.x-cam.x,sy=p.y-cam.y;if(sx<-90||sx>VW+90||sy<-30||sy>VH+170)return;
  let c=PC36.inst.get(p);
@@ -7497,6 +7497,36 @@ window.PERFX36=()=>{try{return CFG.perf&&(XBOX29||MOB28)}catch(e){return false}}
  draw=function(a){const t=performance.now();_d.apply(this,arguments);pd=performance.now()-t};
  const f=()=>{const n=performance.now(),d=n-l;l=n;if(d>45){D.sp.push('frame '+d.toFixed(0)+'ms (upd '+pu.toFixed(0)+' draw '+pd.toFixed(0)+' other '+Math.max(0,d-pu-pd).toFixed(0)+') '+(window.__ivMax36?window.__ivMax36.n+' '+window.__ivMax36.d.toFixed(0)+'ms':''));if(D.sp.length>3)D.sp.shift()}if(window.__ivMax36)window.__ivMax36.d=0;requestAnimationFrame(f)};requestAnimationFrame(f);
  try{new PerformanceObserver(l=>{for(const e of l.getEntries()){D.sp.push('longtask '+e.duration.toFixed(0)+'ms');if(D.sp.length>3)D.sp.shift()}}).observe({entryTypes:['longtask']})}catch(e){}}
+/* switching a tab inside a window (settings tabs, merchant buy/sell, skill tabs...) starts at the top, re-renders on the same tab keep their scroll */
+{let lk='';const _r=rW;rW=function(){const k=(typeof wk!='undefined'?wk:'')+'|'+stab+'|'+mtab+'|'+ttab+'|'+(typeof selSk!='undefined'&&selSk&&typeof selSk=='object'?'':'');const ch=k!==lk;lk=k;_r.apply(this,arguments);if(ch){try{const w=$('win');for(const e of w.querySelectorAll('.bd,.msls,[style*="overflow"]'))e.scrollTop=0;w.scrollTop=0}catch(e){}}}}
+/* collision grid: blocked()/cellOpen() scanned every collider rect on every call (hundreds of rects, thousands of calls per frame for enemy flow fields and movement) */
+const CG36={m:null,n:-1,g:null,w:0,h:0,pen:null,pn:-1};
+function cgBuild36(){if(CG36.m===M&&CG36.c===M.col&&CG36.n===M.col.length&&CG36.g)return;const w=M.w,h=M.h,g=new Array(w*h);for(let i=0;i<g.length;i++)g[i]=null;
+ for(const q of M.col){const x0=Math.max(0,(q.x-1)>>4),x1=Math.min(w-1,(q.x+q.w+1)>>4),y0=Math.max(0,(q.y-1)>>4),y1=Math.min(h-1,(q.y+q.h+1)>>4);for(let j=y0;j<=y1;j++)for(let i=x0;i<=x1;i++){const k=j*w+i;(g[k]||(g[k]=[])).push(q)}}
+ CG36.m=M;CG36.c=M.col;CG36.n=M.col.length;CG36.g=g;CG36.w=w;CG36.h=h;CG36.pen=null}
+blocked=function(px,py){const w=M.w,h=M.h;for(const[dx,dy]of BL36){const X=(px+dx)>>4,Y=(py+dy)>>4;if(X<0||Y<0||X>=w||Y>=h||M.t[Y*w+X]==5)return 1}
+ cgBuild36();const g=CG36.g,x0=Math.max(0,(px-4)>>4),x1=Math.min(w-1,(px+4)>>4),y0=Math.max(0,(py-2)>>4),y1=Math.min(h-1,(py+2)>>4);
+ for(let j=y0;j<=y1;j++)for(let i=x0;i<=x1;i++){const l=g[j*w+i];if(l)for(let a=0;a<l.length;a++){const q=l[a];if(px+4>q.x&&px-4<q.x+q.w&&py+2>q.y&&py-2<q.y+q.h)return 1}}return 0};
+const BL36=[[-4,-2],[4,-2],[-4,2],[4,2]];
+cellOpen=function(i,j){if(i<0||j<0||i>=M.w||j>=M.h)return 0;if(M.t[j*M.w+i]==5)return 0;cgBuild36();const l=CG36.g[j*M.w+i];if(l){const x0=i*16,y0=j*16;for(let a=0;a<l.length;a++){const q=l[a];if(q.x<x0+16&&q.x+q.w>x0&&q.y<y0+16&&q.y+q.h>y0&&q.w*q.h>=24)return 0}}return 1};
+function penFor36(){cgBuild36();if(CG36.pen&&CG36.pn===M.col.length)return CG36.pen;const w=M.w,h=M.h,pen=new Uint8Array(w*h),N=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]];for(let j=0;j<h;j++)for(let i=0;i<w;i++){if(!cellOpen(i,j)){pen[j*w+i]=255;continue}let c=0;for(const[dx,dy]of N)if(!cellOpen(i+dx,j+dy))c=2;pen[j*w+i]=c}CG36.pen=pen;CG36.pn=M.col.length;return pen}
+dfield=function(tx2,ty2){const w=M.w,h=M.h,ex=cl(tx2>>4,0,w-1),ey=cl(ty2>>4,0,h-1),D=new Float32Array(w*h).fill(1e9),pen=penFor36();D[ey*w+ex]=0;
+ const hk=[],hv=[];let hn=0;const push=(d,k)=>{let i=hn++;hk[i]=d;hv[i]=k;while(i>0){const p=(i-1)>>1;if(hk[p]<=hk[i])break;let t=hk[p];hk[p]=hk[i];hk[i]=t;t=hv[p];hv[p]=hv[i];hv[i]=t;i=p}};
+ push(0,ey*w+ex);
+ while(hn>0){const d=hk[0],k=hv[0];hn--;if(hn>0){hk[0]=hk[hn];hv[0]=hv[hn];let i=0;for(;;){let a=i*2+1,b=a+1,m=i;if(a<hn&&hk[a]<hk[m])m=a;if(b<hn&&hk[b]<hk[m])m=b;if(m==i)break;let t=hk[m];hk[m]=hk[i];hk[i]=t;t=hv[m];hv[m]=hv[i];hv[i]=t;i=m}}
+  if(d>D[k])continue;const cx2=k%w,cy2=(k/w)|0;
+  for(let n4=0;n4<4;n4++){const nx=cx2+(n4==0?1:n4==1?-1:0),ny=cy2+(n4==2?1:n4==3?-1:0);if(nx<0||ny<0||nx>=w||ny>=h)continue;const n=ny*w+nx;if(pen[n]==255)continue;const nd=d+1+pen[n];if(nd<D[n]){D[n]=nd;push(nd,n)}}}
+ return D};
+/* fine navigation field: typed-array heap + stop once the area around the hero is solved */
+nvField=function(tx,ty){nvBuild();const w=NV.w,h=NV.h,ok=NV.ok,pen=NV.pen;let[cx,cy]=nvCell(tx,ty);const s=nvNearOk(cx,cy);if(!s)return null;[cx,cy]=s;
+ const D=new Float64Array(w*h).fill(1e9),hk=new Float64Array(w*h*2>65536?65536:w*h*2),hv=new Int32Array(hk.length);let hn=0;
+ const push=(d,k)=>{if(hn>=hk.length)return;let i=hn++;hk[i]=d;hv[i]=k;while(i>0){const p=(i-1)>>1;if(hk[p]<=hk[i])break;let t=hk[p];hk[p]=hk[i];hk[i]=t;const u=hv[p];hv[p]=hv[i];hv[i]=u;i=p}};
+ const [pcx,pcy]=nvCell(P.x,P.y),pk=pcy*w+pcx;let lim=1e9;
+ const st=cy*w+cx;D[st]=0;push(0,st);const DX=[1,-1,0,0,1,-1,1,-1],DY=[0,0,1,-1,1,-1,-1,1],DC=[1,1,1,1,1.41,1.41,1.41,1.41];
+ while(hn>0){const d=hk[0],k=hv[0];hn--;if(hn>0){hk[0]=hk[hn];hv[0]=hv[hn];let i=0;for(;;){let a=i*2+1,b=a+1,m=i;if(a<hn&&hk[a]<hk[m])m=a;if(b<hn&&hk[b]<hk[m])m=b;if(m==i)break;let t=hk[m];hk[m]=hk[i];hk[i]=t;const u=hv[m];hv[m]=hv[i];hv[i]=u;i=m}}
+  if(d>D[k])continue;if(k===pk&&lim===1e9)lim=d+70;if(d>lim)break;
+  const x=k%w,y=(k/w)|0;for(let q=0;q<8;q++){const dx=DX[q],dy=DY[q],nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const n=ny*w+nx;if(!ok[n])continue;if(dx&&dy&&(!ok[y*w+nx]||!ok[ny*w+x]))continue;const nd=d+DC[q]+pen[n]*.35;if(nd<D[n]){D[n]=nd;push(nd,n)}}}
+ return{D,cx,cy}};
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
