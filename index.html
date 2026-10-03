@@ -2021,7 +2021,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23ab</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23ac</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7439,13 +7439,14 @@ function pcTest36(p){const t0=tm,N=4,ts=[t0,t0+.37,t0+1.11,t0+1.93],im=[];
  if(!stat&&(x1-x0)*(y1-y0)>150*150)return null;
  return{x0,y0,w:x1-x0+1,h:y1-y0+1,anim:!stat}}
 const _dp36=dprop;
-const AQ36=10;
+/* animated-prop budget. Xbox: re-render each animated prop at aq Hz (was 10), at most re (was 14) re-renders per frame, and stop for the frame once rt ms have been spent re-rendering. Everything else: unchanged (10 / 14 / no time cap). */
+const XPC36=XBOX29?{aq:6,re:10,rt:1.2}:{aq:10,re:14,rt:1e9};window.XPC36=XPC36;
 dprop=function(p){
  if(!(PC36.on||(window.PERFX36&&window.PERFX36()))||CFG.pcache===0){_dp36(p);return}
  const n=p.n;if(PC36.bad.has(n)||p.cut!==undefined||p.cd!==undefined||p.v!==undefined||p.fg){_dp36(p);return}
  const sx=p.x-cam.x,sy=p.y-cam.y;if(sx<-90||sx>VW+90||sy<-30||sy>VH+170)return;
  let c=PC36.inst.get(p);
- const fr=(typeof frameN!=='undefined'?frameN:tm);if(PC36.fr!==fr){PC36.fr=fr;PC36.made=0;PC36.re=0}
+ const fr=(typeof frameN!=='undefined'?frameN:tm);if(PC36.fr!==fr){PC36.fr=fr;PC36.made=0;PC36.re=0;PC36.rt=0}
  if(!c){
   let bb=PC36.ok.get(n);
   if(bb===undefined){bb=pcTest36(p);if(!bb){PC36.bad.add(n);_dp36(p);return}PC36.ok.set(n,bb)}
@@ -7455,10 +7456,10 @@ dprop=function(p){
  }
  const bb=c.bb;
  if(bb.anim){
-  const st=Math.floor(tm*AQ36+(p.x*.37%1));
-  if(c.st!==st&&(c.st<0&&PC36.made<12||c.st>=0&&PC36.re<14)){
-   if(c.st<0)PC36.made++;else PC36.re++;
-   const g=c.g2||(c.g2=c.getContext('2d'));g.clearRect(0,0,c.width,c.height);const sx0=x,cx=cam.x,cy=cam.y,t0=tm;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;tm=st/AQ36;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy;tm=t0}c.st=st}
+  const st=Math.floor(tm*XPC36.aq+(p.x*.37%1));
+  if(c.st!==st&&(c.st<0&&PC36.made<12||c.st>=0&&PC36.re<XPC36.re&&PC36.rt<XPC36.rt)){
+   if(c.st<0)PC36.made++;else PC36.re++;const t1=XBOX29?performance.now():0;
+   const g=c.g2||(c.g2=c.getContext('2d'));g.clearRect(0,0,c.width,c.height);const sx0=x,cx=cam.x,cy=cam.y,t0=tm;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;tm=st/XPC36.aq;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy;tm=t0}c.st=st;if(XBOX29)PC36.rt+=performance.now()-t1}
   if(c.st<0){_dp36(p);return}
  }else if(c.st<0){const g=c.g2||(c.g2=c.getContext('2d'));const sx0=x,cx=cam.x,cy=cam.y;x=g;cam.x=p.x-OX36+bb.x0;cam.y=p.y-OY36+bb.y0;try{_dp36(p)}finally{x=sx0;cam.x=cx;cam.y=cy}c.st=0}
  x.drawImage(c,Math.round(sx-c.ox),Math.round(sy-c.oy));PC36.hit++;
