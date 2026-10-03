@@ -2002,7 +2002,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23k</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23m</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -7203,9 +7203,11 @@ body.tch #cv,body.tch #g{touch-action:none}`;
   const SVA='<svg viewBox="0 0 24 24"><path d="M5 19L17 7M14 4l6 0 0 6" fill="none" stroke="#fff7dc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20l3-3" stroke="#c8902a" stroke-width="3" stroke-linecap="round"/></svg>';
   /* id, key, default x, y (in 1/100 of the game height), size, label, mode, name */
   const arc=(r,deg)=>[146+r*Math.cos(deg*Math.PI/180),74-r*Math.sin(deg*Math.PI/180)];
-  const B=[['att','KeyJ',146,74,16,SVA,'hold','Attack'],['roll','Space',126,86,10,SVR,'tap','Roll'],['e','KeyE',160,88,10,'E','hold','Interact'],['r','KeyR',155,57,11,'R','tap','Ultimate'],['f','KeyF',145,92,9,'<i class="ico"></i>','tap','Potion']];
+  const B=[['att','KeyJ',146,74,16,SVA,'hold','Attack'],['roll','Space',126,86,10,SVR,'tap','Roll'],['e','KeyE',160,88,10,'E','hold','Interact'],['r','KeyR',155,57,11,'R','tap','Ultimate'],['f','KeyF',160,74,9,'<i class="ico"></i>','tap','Potion']];
+  /* all eight skill slots wrap the attack button: an inner arc of four, then the lower slot (where the potion used to sit) and three on the outer arc */
   [180,150,120,90].forEach((d,k)=>{const[x,y]=arc(27,d);B.push(['s'+(k+1),'Digit'+(k+1),Math.round(x*10)/10,Math.round(y*10)/10,8.5,'<i class="ico"></i><small>'+(k+1)+'</small>','tap','Skill '+(k+1)])});
-  [185,155,125,95].forEach((d,k)=>{const[x,y]=arc(40,d);B.push(['s'+(k+5),'Digit'+(k+5),Math.round(x*10)/10,Math.round(y*10)/10,8,'<i class="ico"></i><small>'+(k+5)+'</small>','tap','Skill '+(k+5)])});
+  B.push(['s5','Digit5',145,92,8.5,'<i class="ico"></i><small>5</small>','tap','Skill 5']);
+  [185,155,125].forEach((d,k)=>{const[x,y]=arc(40,d);B.push(['s'+(k+6),'Digit'+(k+6),Math.round(x*10)/10,Math.round(y*10)/10,8,'<i class="ico"></i><small>'+(k+6)+'</small>','tap','Skill '+(k+6)])});
   root.innerHTML='<div id="tj28"></div><div id="tjh28"></div><div id="tjb28"><i></i></div>'+B.map(([id,,x,y,s,l])=>`<div class="tb28" data-b="${id}" style="--px:${x};--py:${y};--s:${s}">${l}</div>`).join('');
   document.body.appendChild(root);
   const rot=document.createElement('div');rot.id='trot28';rot.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#ffe9a0" stroke-width="1.6" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/></svg><div>Please rotate your device to landscape</div><div style="font-size:13px;opacity:.7;font-weight:400">Hollowmere plays best sideways</div>';document.body.appendChild(rot);
@@ -7483,7 +7485,7 @@ window.TC36=TC36;
 
 /* force the browser to throw away and re-create the GPU backing stores + sprite caches (what toggling performance mode used to do by accident) */
 window.canvasRefresh36=function(){try{for(const c of[tcv,cv]){const w=c.width;c.width=0;c.width=w}tx2._d=1;try{SHD22.clear()}catch(e){}TC36.m.clear();TC36.seen.clear();PC36.inst=new WeakMap();for(const k in GC)delete GC[k];if(typeof fit=='function')fit()}catch(e){}};
-window.PERFX36=()=>{try{return CFG.perf&&XBOX29}catch(e){return false}};
+window.PERFX36=()=>{try{return CFG.perf&&(XBOX29||MOB28)}catch(e){return false}};
 
 /* frame-cost collector (cheap: two performance.now() per frame) feeding the admin perf overlay */
 {const D=window.PD36={u:0,d:0,l:0,su:0,sd:0,n:0};const _u=update,_d=draw;
@@ -7559,6 +7561,120 @@ try{if(XBOX29){
  setTimeout(()=>{try{canvasRefresh36()}catch(e){}},1500);
  let d=0;const iv=setInterval(()=>{try{if(!started||d)return;d=1;clearInterval(iv);setTimeout(()=>{try{window.refresh29&&refresh29()}catch(e){}},3500)}catch(e){}},500);
 }}catch(e){}
+
+/* ===== v14.23l: phone cool-down governor, context icons for the interact button, touch layout migration ===== */
+{
+ const MOB=()=>{try{return MOB28}catch(e){return false}};
+ /* ---------- 1. phones: cooler running ---------- */
+ if(MOB()){
+  if(CFG.cool==null)CFG.cool=1;
+  /* layout migration: the potion moved above the interact button and the lower slot is now skill 5 */
+  if(CFG.tcv38!==1){CFG.tcv38=1;try{for(const k of['f','s5','s6','s7','s8'])if(CFG.tcb&&CFG.tcb[k]){const o=CFG.tcb[k];if(o.x!=null||o.y!=null){delete o.x;delete o.y}}saveCFG()}catch(e){}}
+  /* frame governor: full rate while moving, fighting or in a minigame; half rate when standing still; low rate behind menus */
+  const _l=loop;let lt=0,px=0,py=0,mv=0;
+  loop=function(t){try{if(CFG.cool&&started&&P&&!document.hidden){
+     if(Math.abs(P.x-px)+Math.abs(P.y-py)>.01||P.casting>0||P.stun||P.hp<=0||keys.size>0)mv=t;px=P.x;py=P.y;
+     let cap=60;
+     if(wopen&&!(typeof SVMG!='undefined'&&SVMG))cap=24;
+     else if(t-mv>700&&!CUT.on&&!trans&&!(typeof SVMG!='undefined'&&SVMG)&&!(typeof MGI!='undefined'&&MGI)&&!(typeof FI!='undefined'&&FI&&FI.on)&&!(M&&M.en&&M.en.some(e=>Math.abs(e.x-P.x)<360&&Math.abs(e.y-P.y)<240))&&!(typeof ZNS!='undefined'&&ZNS.length)&&!(window.TOUCH38))cap=30;
+     const gap=1000/cap;if(t-lt<gap-3){requestAnimationFrame(loop);return}lt=t}}catch(e){}
+   _l(t)};
+  /* touching the screen counts as activity */
+  addEventListener('pointerdown',()=>{window.TOUCH38=1;clearTimeout(window.TOUCH38T);window.TOUCH38T=setTimeout(()=>{window.TOUCH38=0},900)},true);
+  const _w=wSet;wSet=function(){let h=_w.apply(this,arguments);if(stab!='gfx')return h;const k=h.indexOf('<h3 class="kbh">Performance &amp; view</h3>');if(k<0)return h;const s=h.indexOf('<div class="set">',k);if(s<0)return h;
+   return h.slice(0,s+17)+seg('cool','Battery saver (cooler phone)',[[1,'On'],[0,'Off']])+h.slice(s+17)};
+ }
+ /* ---------- 2. interact button icons ---------- */
+ const S=(b,a)=>`<svg viewBox="0 0 24 24" fill="none" stroke="#fff7dc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${b}${a?`<g stroke="#e0a73a" fill="#e0a73a">${a}</g>`:''}</svg>`;
+ const IC={
+  talk:S('<path d="M4 5h16v10h-9l-4.5 4v-4H4z"/>','<circle cx="8.5" cy="10" r=".9"/><circle cx="12" cy="10" r=".9"/><circle cx="15.5" cy="10" r=".9"/>'),
+  recruit:S('<circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.4-3.6 2.7-5.6 5.5-5.6s5.1 2 5.5 5.6"/>','<path d="M18 7v6M15 10h6" stroke-width="2.2"/>'),
+  shop:S('<path d="M8 6c1-2 7-2 8 0l3 5c1.5 3.5-.5 9-7 9s-8.5-5.5-7-9z"/>','<path d="M12 11v6M10 12.5c0-1.4 4-1.4 4 0s-4 2.1-4 3.5 4 1.4 4 0" stroke-width="1.3" fill="none"/>'),
+  steal:S('<path d="M7 12V6.5a1.5 1.5 0 0 1 3 0V11M10 11V4.5a1.5 1.5 0 0 1 3 0V11M13 11V5.5a1.5 1.5 0 0 1 3 0V12M16 12V8.5a1.5 1.5 0 0 1 3 0V14c0 4-2.5 6-6 6s-5-1.5-6.5-4L4 12.5a1.5 1.5 0 0 1 2.5-1.5z"/>','<circle cx="12" cy="16" r="1.4"/>'),
+  axe:S('<path d="M7 21L15.5 6"/>','<path d="M12 3.500c3.500-1.500 7.500.5 8.500 4-3 2.500-6.500 3-9.500 1.500z" stroke-width="1"/>'),
+  pick:S('<path d="M5 21L14 10"/><path d="M3.5 9c3-5 12-6.5 17-2.5M3.5 9c.5-1.5 1.5-2.5 3-3.5M20.5 6.5c-.2 1.6-.9 3-1.8 4"/>',''),
+  herb:S('<path d="M12 21V9"/><path d="M12 14c-4 0-7-2-7-6 4 0 7 2 7 6zM12 11c0-4 3-7 7-7 0 4-3 7-7 7z"/>',''),
+  fairy:S('<path d="M12 12c-4-6-9-6-9-2s5 5 9 2zM12 12c4-6 9-6 9-2s-5 5-9 2z"/><path d="M12 12v5M10.5 20h3"/>','<path d="M12 3l.9 2.1 2.1.9-2.1.9L12 9l-.9-2.1L9 6l2.1-.9z" stroke-width=".6"/><circle cx="12" cy="12" r="1.6"/>'),
+  net:S('<circle cx="14" cy="9" r="6"/><path d="M10 13.500L4 20M8 9h12M14 3v12"/>',''),
+  fish:S('<path d="M3 12c3-5 9-6 13-3l5-3v12l-5-3c-4 3-10 2-13-3z"/>','<circle cx="8" cy="11" r="1"/>'),
+  shell:S('<path d="M4 16c0-6 3-11 8-11s8 5 8 11c0 2-2 3-4 3H8c-2 0-4-1-4-3zM12 5v14M8 7.5L9 19M16 7.5L15 19"/>',''),
+  bottle:S('<path d="M10 3h4v4l2.5 3.5V19a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-8.5L10 7z"/><path d="M9 13h6M9 16h6"/>',''),
+  snare:S('<path d="M12 21V12"/><path d="M5 12c0-5 3-8 7-8s7 3 7 8M8 12c0-3 1.5-5 4-5s4 2 4 5"/>','<circle cx="12" cy="21" r="1.2"/>'),
+  dig:S('<path d="M13 3l8 8-3 1-6-6zM12 7L6 20M4 20h6"/>',''),
+  chest:S('<path d="M4 11V8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v3zM4 11h16v8H4z"/>','<rect x="10.5" y="10" width="3" height="4.2" rx=".6"/>'),
+  hammer:S('<path d="M13 8l-8 12M9 4h8l3 3-2 2-2-1v4l-3-2z"/>',''),
+  flask:S('<path d="M9 3h6M10 3v6l-5.5 9.5a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3"/>','<circle cx="10.5" cy="16.5" r="1"/><circle cx="14" cy="14" r=".8"/><circle cx="14" cy="18.5" r=".8"/>'),
+  flame:S('<path d="M12 3c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3.500 2-4.500.2 1.500 1 2.500 2 2.500 0-3-.5-6 1-9z"/>',''),
+  bed:S('<path d="M3 18V6M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/>','<circle cx="7" cy="11" r="1.8"/>'),
+  boot:S('<path d="M8 3h6v8l5 3a2 2 0 0 1 1 1.700V19H6V3z"/><path d="M6 15h8"/>',''),
+  altar:S('<path d="M4 10h16M6 10v9M18 10v9M3 19h18"/>','<path d="M12 3c.8 2.500 3 3 3 5.200a3 3 0 0 1-6 0C9 6 11.200 5.500 12 3z" stroke-width=".8"/>'),
+  well:S('<path d="M5 12h14v8H5zM7 12V6l5-3 5 3v6M12 6v4"/>','<path d="M12 15c-1 1.300-1.500 2-1.500 2.500a1.500 1.500 0 0 0 3 0c0-.5-.5-1.200-1.500-2.500z" stroke-width=".6"/>'),
+  coin:S('<circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.500 9.500c0-2 5-2 5 0s-5 3-5 5 5 2 5 0"/>',''),
+  portal:S('<ellipse cx="12" cy="12" rx="5" ry="9"/><ellipse cx="12" cy="12" rx="2" ry="5.500"/>','<path d="M3 12h3M18 12h3" stroke-width="1.500"/>'),
+  door:S('<path d="M6 21V4h9l3 2v15zM3 21h18"/>','<circle cx="13.500" cy="13" r="1"/>'),
+  stairs:S('<path d="M3 20h5v-5h5v-5h5V5h3"/><path d="M14 17l4 3 4-3" />',''),
+  boat:S('<path d="M12 3v12M12 4l7 9h-7M12 7L7 13h5M3 17h18l-2.500 4h-13z"/>',''),
+  exit:S('<path d="M10 4H5v16h5M10 12h10M16 8l4 4-4 4"/>',''),
+  egg:S('<path d="M12 3c-4 0-7 6-7 11a7 7 0 0 0 14 0c0-5-3-11-7-11z"/><path d="M8 14l2-2 2 2 2-2 2 2"/>',''),
+  paw:S('<ellipse cx="12" cy="16" rx="4.500" ry="3.500"/>','<ellipse cx="6" cy="11" rx="1.800" ry="2.400"/><ellipse cx="10" cy="7" rx="1.800" ry="2.400"/><ellipse cx="14" cy="7" rx="1.800" ry="2.400"/><ellipse cx="18" cy="11" rx="1.800" ry="2.400"/>'),
+  tower:S('<path d="M7 21V9H5V4h3v2h2V4h4v2h2V4h3v5h-2v12zM10 21v-5h4v5"/>',''),
+  heal:S('<path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5z"/>',''),
+  board:S('<rect x="4" y="4" width="16" height="16" rx="1.500"/><path d="M8 9h8M8 13h5"/>','<circle cx="8" cy="7" r=".8"/><circle cx="16" cy="7" r=".8"/>'),
+  scroll:S('<path d="M7 4h11a2 2 0 0 1 2 2v1H9v11a2 2 0 0 1-4 0V6a2 2 0 0 1 2-2zM9 7h11"/>',''),
+  hand:S('<path d="M7 12V6.500a1.500 1.500 0 0 1 3 0V11M10 11V4.500a1.500 1.500 0 0 1 3 0V11M13 11V5.500a1.500 1.500 0 0 1 3 0V12M16 12V8.500a1.500 1.500 0 0 1 3 0V14c0 4-2.500 6-6 6s-5-1.500-6.500-4L4 12.500a1.500 1.500 0 0 1 2.500-1.500z"/>','')
+ };
+ window.IC38=IC;
+ const kind=(it)=>{if(!it)return null;const l=String(it.l||'').toLowerCase();
+  if(it.node)return it.node.k==='ore'?'pick':'herb';
+  if(/chop|tree|lumber|wood/.test(l))return'axe';
+  if(/catch/.test(l))return/net|butter/.test(l)?'net':'fairy';
+  if(/cast a line|^fish|fishing/.test(l))return'fish';
+  if(/shell/.test(l))return'shell';if(/bottle/.test(l))return'bottle';
+  if(/snare|trap/.test(l))return'snare';if(/dig/.test(l))return'dig';
+  if(/chest|lockbox|trophy|stash/.test(l)||it.chest)return'chest';
+  if(/anvil|hammer|blacksmith|carpenter|forge/.test(l))return'hammer';
+  if(/cauldron|brew|alchemist/.test(l))return'flask';
+  if(/campfire|hearth|cook/.test(l))return'flame';
+  if(/rest in bed|bed\b/.test(l))return'bed';
+  if(/agility/.test(l))return'boot';
+  if(/pickpocket/.test(l))return'steal';
+  if(/merchant|stall|trader|shop/.test(l))return'shop';
+  if(/recruit/.test(l))return'recruit';
+  if(/notice|bounty/.test(l))return'board';
+  if(/talk|trainer|guildmaster|speak|summoner|spire/.test(l)){return/spire/.test(l)?'tower':'talk'}
+  if(/altar|pact stone/.test(l))return'altar';
+  if(/wishing well/.test(l))return'well';if(/fountain|wish/.test(l))return'coin';
+  if(/ferry|board the|sail/.test(l))return'boat';
+  if(/portal|shimmer|sealed/.test(l))return'portal';
+  if(/descend|stairs/.test(l))return'stairs';
+  if(/leave/.test(l))return'exit';
+  if(/enter|door|delve|crypt|inn|home|guild/.test(l))return'door';
+  if(/stable|pet|mount/.test(l))return'paw';if(/egg|breeder/.test(l))return'egg';
+  if(/tower/.test(l))return'tower';
+  if(/heal/.test(l))return'heal';
+  return'hand'};
+ window.IK38=kind;
+ let last='';
+ const upd=()=>{try{const el=document.querySelector('.tb28[data-b="e"]');if(!el||!document.body.classList.contains('tch'))return;
+   const k=(!wopen&&!trans&&typeof promptI!='undefined'&&promptI)?kind(promptI):null;const key=k||'';if(key===last)return;last=key;
+   el.innerHTML=k?IC[k]:'E';el.classList.toggle('ctx38',!!k);el.title=k||''}catch(e){}};
+ setInterval(upd,90);
+ const st=document.createElement('style');st.textContent='.tb28.ctx38{box-shadow:0 0 calc(var(--tu)*3) #ffd24a,inset 0 0 calc(var(--tu)*1.5) #ffd24a99}.tb28.ctx38 svg{width:64%;height:64%}';document.head.appendChild(st);
+ if(MOB()){const z=document.createElement('style');z.textContent='#tch28{z-index:30}body.tch #zgb{left:calc(var(--gl,0px) + var(--gw,100vw)*.012)!important;right:auto!important;top:calc(var(--gt,0px) + var(--gh,100vh)*.25)!important;width:min(17em,28vw)!important}';document.head.appendChild(z);const _th=tqHud;tqHud=function(){_th.apply(this,arguments);try{const zg=$('zgb');if(zg&&document.body.classList.contains('tch')&&zg.style.display=='block'){const g=G.getBoundingClientRect();for(const[k,v]of[['left',(g.left+g.width*.012)+'px'],['top',(g.top+g.height*.25)+'px'],['width',Math.min(g.width*.26,g.height*.62)+'px'],['right','auto']])zg.style.setProperty(k,v,'important')}}catch(e){}}}
+}
+
+/* v14.23m Xbox-only: sticky controller profile, fixed 60Hz target, change-only DOM writes */
+if(typeof XBOX29!=='undefined'&&XBOX29){try{
+ /* the load-time refresh probe reads 30 on a busy console: keep 60 */
+ let hz=60;Object.defineProperty(window,'HZ29',{get:()=>hz,set:v=>{hz=(v>=55?v:60)},configurable:true});
+ let chz=60;try{Object.defineProperty(CFG,'hz',{get:()=>chz,set:v=>{chz=(v>=55?v:60)},configurable:true,enumerable:true})}catch(e){}
+ /* controller was the last input: never let the idle timeout hide the legend / resize the game area */
+ setInterval(()=>{try{if(started&&GP.on&&GP.last=='pad'&&GP.act&&performance.now()-GP.act>8000&&performance.now()-GP.act<24000)GP.act=performance.now()-7000}catch(e){}},4000);
+ /* keep stamping while pad stays last input, only the 6s hint uses GP.act (hint text stays hidden since stamp is old) */
+ const gh=document.getElementById('gpHint')||(typeof gpHint!=='undefined'?gpHint:null);
+ if(gh){const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');let last='';Object.defineProperty(gh,'innerHTML',{get(){return d.get.call(this)},set(v){if(v===last)return;last=v;d.set.call(this,v)},configurable:true});
+  const ds=gh.style;let dv='';const _sp=ds.setProperty}
+}catch(e){}}
 
 initSlots();try{drawC()}catch(e){}
 /* ===== INPUT / BOOT ===== */
