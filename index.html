@@ -1527,8 +1527,8 @@ for(const e of M.en){if(f.hit.has(e))continue;if(Math.hypot(e.x-f.x,e.y-14-f.y)<
 if(f.k=='comet'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}
 if(f.k=='arrowf'&&!f.fired&&f.t>=f.d){f.fired=1;burst(f.x,f.y,5,f.c,50);if(f.cb)f.cb()}
 if(f.k=='sword'&&!f.fired&&f.t>=f.d){f.fired=1;if(f.cb)f.cb()}}
-fxs=fxs.filter(f=>f.k=='pj'?f.l>0:f.t<f.d);
-pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});if(pts.length>260&&window.PERFX36&&window.PERFX36())pts=pts.slice(pts.length-260);
+fxs=fxs.filter(f=>f.k=='pj'?f.l>0:f.t<f.d);if(window.XB37&&fxs.length>100){let ex=fxs.length-100;fxs=fxs.filter(f=>f.k=='pj'||ex--<=0)}
+pts=pts.filter(p=>{p.l-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=(p.g==null?0:p.g)*dt;return p.l>0});{const PM=window.XB37?130:260;if(pts.length>PM&&window.PERFX36&&window.PERFX36())pts=pts.slice(pts.length-PM)}
 DEC=DEC.filter(d=>(d.t+=dt)<d.d);
 for(const z of ZNS){z.t+=dt;z.acc+=dt}
 }
@@ -2002,7 +2002,7 @@ function drawC(){msSync();const sel=MS.sel,sl=SLOTS[sel],ks=$('mm2')&&document.q
   right=sl?(()=>{const p=sl.P,c=CL[p.c]||CL.W,tl=(ico,l,v)=>`<div class="mtile"><span>${ic(ico,c.c)}</span><small>${l}</small><b>${v}</b></div>`,eqn=Object.keys(p.eq||{}).length;return `<div class="mdet pn" style="--cc:${c.c}"><div class="mdh" style="color:${c.c}">${ic(c.ic,c.c)}<div><b>${esc(p.name)}</b><small>${RC[p.race]?RC[p.race].n:''} ${c.n}${p.hc?' | Hardcore':''}</small></div></div><div class="mtiles">${tl('i_star','Level',p.lv)}${tl('i_travel','Location',ZN[Math.min(sl.zone||0,ZN.length-1)].n)}${tl('i_coin','Gold',Math.floor(p.g||0).toLocaleString())}${tl('i_bag','Gear worn',eqn+' / 11')}${tl('i_talent','Best delve',(p.best||0)+' floors')}${tl('i_book','Quests done',p.qdone||0)}</div><small class="dim">Last played ${ago(sl.t)}${sl.recovered?' (recovered)':''}</small><div class="row"><button id="pl" class="big go">Enter Hollowmere</button></div></div>`})():`<div class="mdet pn"><div class="mdh"><div><b class="dim">Empty slot</b><small>Press Enter to begin a new adventure</small></div></div><div class="row"><button id="nw" class="big go">Create hero</button></div></div>`}
  const vc=`<div id="vctl" class="pn"><button data-v="rl" data-tip="ui:rotL">&#9664;</button><button data-v="rr" data-tip="ui:rotR">&#9654;</button><button data-v="zo">-</button><button data-v="zi">+</button><button data-v="po" class="wide">${['Idle','Walk','Attack','Cast'][VW_.pose]}</button><button data-v="sp" class="${VW_.spin?'sel':''}" data-tip="ui:spin">Spin</button></div>`;
  let modal='';if(MS.del){const s=SLOTS[MS.del-1];const nm=s?esc(s.P.name):'this hero';modal=`<div class="mmod"><div class="pn mbox"><h3>Delete ${nm}?</h3>${MS.delStage==1?`<p>This removes ${nm} from slot ${MS.del}.</p><div class="row"><button id="dn1" class="dg">Continue</button><button id="dx">Cancel</button></div>`:`<p><b>${nm}</b> will be lost forever, along with their inventory and progress.<br>Type <b>DELETE</b> to confirm.</p><input type="text" id="dt" value="${esc(MS.delTxt)}" autocomplete="off" style="width:100%"><div class="row"><button id="dn2" class="dg" ${MS.delTxt==='DELETE'?'':'disabled'}>Delete forever</button><button id="dx">Cancel</button></div>`}</div></div>`}
- st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23m</div></div>`;
+ st.innerHTML=`<div id="mm2" class="${MS.mode}"><div class="mlogo"><h1>HOLLOWMERE</h1><div class="sub">ECHOES OF THE DELVE</div></div>${left}${right}${vc}${modal}<div class="mver">v14.23n</div></div>`;
  const ls=document.querySelector('.msls');if(ls)ls.scrollTop=keep;
  const nn=$('nn');if(nn)nn.addEventListener('input',()=>{CRC.n=nn.value});const dt=$('dt');if(dt){dt.addEventListener('input',()=>{MS.delTxt=dt.value;const b=$('dn2');if(b)b.disabled=dt.value!=='DELETE'});dt.focus()}}
 function msPlay(i){const s=SLOTS[i];if(!s)return;curSlot=i;P=s.P;S=s.S;zone=s.zone||0;fixSave();start();const mn=Math.min(180,(Date.now()-(s.t||Date.now()))/6e4);if(mn>=1){const g=Math.round(mn*P.lv*1.6);P.g+=g;addXp(mn*P.lv*5);say('Offline '+Math.floor(mn)+' min: +'+g+' gold and XP');ban('WELCOME BACK')}}
@@ -2524,7 +2524,7 @@ function evUpdate(dt){if(!P||!M)return;achT-=dt;if(achT<=0){achT=1.5;achCheck()}
  gobT-=dt;if(gobT<=0){gobT=130+Math.random()*140;if(!M.en.some(e=>e.gob)&&!(M.ev&&M.ev.k=='hunt'&&0))gobSpawn()}
  if(M.ev){if(M.ev.tick)M.ev.tick(dt);if(!M.ev)return;M.ev.t+=dt;if(M.ev.t>M.ev.lim){const k=M.ev.k;if(M.ev.fail){M.ev.fail();M.en.forEach(e=>{if(e.evk)e.evk=null});return}M.ev=null;say(typeof EVEND!='undefined'&&EVEND[k]||(k=='horde'?'The horde scatters.':'The champion withdraws.'));M.en.forEach(e=>{if(e.hunt){e.hunt=0}if(e.hord)e.hord=0})}}
  else if(!dun){evT-=dt;if(evT<=0){evT=110+Math.random()*100;evStart(evPick())}}
- if(el){if(M.ev){el.hidden=false;const left=Math.max(0,Math.ceil(M.ev.lim-M.ev.t));el.innerHTML=M.ev.txt?M.ev.txt():M.ev.k=='horde'?`<b>Monster Horde</b> - ${M.ev.left} left<small>${left}s remaining</small>`:`<b>Elite Hunt</b> - defeat the champion<small>${left}s remaining</small>`}else el.hidden=true}}
+ if(el){if(M.ev){el.hidden=false;const left=Math.max(0,Math.ceil(M.ev.lim-M.ev.t));el.__h=M.ev.txt?M.ev.txt():M.ev.k=='horde'?`<b>Monster Horde</b> - ${M.ev.left} left<small>${left}s remaining</small>`:`<b>Elite Hunt</b> - defeat the champion<small>${left}s remaining</small>`;if(el.__h!==el.__l){el.__l=el.__h;el.innerHTML=el.__h}}else el.hidden=true}}
 const _cu0=critUpdate;critUpdate=function(dt){_cu0(dt);evUpdate(dt)};
 /* ---- achievements ---- */
 const ACH=[['k1','Monster Masher','Defeat 100 enemies',()=>P.kc>=100],['k2','Slayer','Defeat 1,500 enemies',()=>P.kc>=1500],['k3','Annihilator','Defeat 10,000 enemies',()=>P.kc>=10000],
@@ -4813,7 +4813,7 @@ const _ep89=evPick;evPick=function(){const k=_ep89();if(k=='night'&&(P.lv<16||zo
 const _evs89=evStart;
 evStart=function(k){if(k!='night')return _evs89(k);if(M.ev||dun||inTown())return;const z=ZN[zone],ml=Math.max(M.en.length?M.en[0].ml:z.lv,P.lv-3);
  const ring=(r0,r1)=>{let px,py,t=0;do{const a=Math.random()*6.283,r=r0+Math.random()*(r1-r0);px=P.x+Math.cos(a)*r;py=P.y+Math.sin(a)*r}while((blocked(px,py)||(M.town&&px<M.town.x1+10))&&t++<40);return[px,py]};
- const df=dfi(),cap=Math.min(130,80+df*10+zone*4),ev={k:'night',t:0,lim:150,sp:0,kills:0,acc:0,next:30,rate0:3.2+df*.5,
+ const df=dfi(),cap=Math.round(Math.min(130,80+df*10+zone*4)*(window.XB37?.55:1)),ev={k:'night',t:0,lim:150,sp:0,kills:0,acc:0,next:30,rate0:3.2+df*.5,
   txt(){const alive=M.en.filter(q=>q.evk===ev).length,t=Math.max(0,Math.ceil(this.lim-this.t));return`<b style="color:#c8a0ff">NIGHT SWARM</b> - ${alive} bats<small>Survive until dawn: ${t}s | ${this.kills} slain | no resurrection</small>`},
   tick(dt){P.sfT=999;const t=this.t,rate=this.rate0+t*.45;this.acc+=rate*dt;let alive=0;for(const q of M.en)if(q.evk===ev)alive++;
    while(this.acc>=1){this.acc-=1;if(alive>=cap)continue;const[px,py]=ring(100,200);const e=spawnEn(ml,px,py,false,0);e.hp=e.mh=e.mh*1.1*(1+t/20);e.ttl='Night Bat';e.evk=ev;e.sw=1;e.dmx=1.5+3*t/this.lim;if(Math.random()<.4)e.aff='Swift';e.st='chase';alive++}
@@ -7674,6 +7674,8 @@ if(typeof XBOX29!=='undefined'&&XBOX29){try{
  const gh=document.getElementById('gpHint')||(typeof gpHint!=='undefined'?gpHint:null);
  if(gh){const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');let last='';Object.defineProperty(gh,'innerHTML',{get(){return d.get.call(this)},set(v){if(v===last)return;last=v;d.set.call(this,v)},configurable:true});
   const ds=gh.style;let dv='';const _sp=ds.setProperty}
+ /* containment + GPU layers: keep HUD text churn from reflowing the page, give moving things their own layer */
+ const st=document.createElement('style');st.textContent='.xb37 #pf,.xb37 #buffs,.xb37 #bnl,.xb37 #pty,.xb37 #mmw,.xb37 #cur,.xb37 #chat,.xb37 #evt,.xb37 #bot,.xb37 #prompt,.xb37 #toast,.xb37 #ban,.xb37 #leg15,.xb37 #gpHint{contain:layout style}.xb37 #hud{contain:layout style}.xb37 *{scroll-behavior:auto!important}';document.head.appendChild(st);
 }catch(e){}}
 
 initSlots();try{drawC()}catch(e){}
